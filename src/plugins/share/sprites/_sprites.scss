@@ -1,0 +1,94 @@
+@mixin _sprites_scss {
+    background: url("../assets/sprites_share.png") no-repeat;
+ }
+
+@mixin bitly {
+    @include _sprites_scss ;
+    background-position: 0 0;
+ }
+
+@mixin blogger {
+    @include _sprites_scss ;
+    background-position: 0 -32px;
+ }
+
+@mixin delicious {
+    @include _sprites_scss ;
+    background-position: 0 -64px;
+ }
+
+@mixin digg {
+    @include _sprites_scss ;
+    background-position: 0 -96px;
+ }
+
+@mixin diigo {
+    @include _sprites_scss ;
+    background-position: 0 -128px;
+ }
+
+@mixin facebook {
+    @include _sprites_scss ;
+    background-position: 0 -160px;
+ }
+
+@mixin feed {
+    @include _sprites_scss ;
+    background-position: 0 -192px;
+ }
+
+@mixin gmail {
+    @include _sprites_scss ;
+    background-position: 0 -224px;
+ }
+
+@mixin googleplus {
+    @include _sprites_scss ;
+    background-position: 0 -256px;
+ }
+
+@mixin linkedin {
+    @include _sprites_scss ;
+    background-position: 0 -288px;
+ }
+
+@mixin myspace {
+    @include _sprites_scss ;
+    background-position: 0 -320px;
+ }
+
+@mixin pinterest {
+    @include _sprites_scss ;
+    background-position: 0 -352px;
+ }
+
+@mixin reddit {
+    @include _sprites_scss ;
+    background-position: 0 -384px;
+ }
+
+@mixin stumbleupon {
+    @include _sprites_scss ;
+    background-position: 0 -416px;
+ }
+
+@mixin technorati {
+    @include _sprites_scss ;
+    background-position: 0 -448px;
+ }
+
+@mixin tumblr {
+    @include _sprites_scss ;
+    background-position: 0 -480px;
+ }
+
+@mixin twitter {
+    @include _sprites_scss ;
+    background-position: 0 -512px;
+ }
+
+@mixin yahoomail {
+    @include _sprites_scss ;
+    background-position: 0 -544px;
+ }
+
