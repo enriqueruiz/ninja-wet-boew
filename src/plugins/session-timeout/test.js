@@ -18,7 +18,11 @@ describe( "Session Timeout test suite", function() {
 
 	var clock, server, $session,
 		spies = {},
-		sandbox = sinon.sandbox.create();
+		sandbox = sinon.sandbox.create(),
+		$document = wb.doc,
+		callback;
+
+	this.timeout(5000);
 
 	/*
 	 * Before beginning the test suite, this function is executed once.
@@ -29,25 +33,27 @@ describe( "Session Timeout test suite", function() {
 		spies.trigger = sandbox.spy( $.prototype, "trigger" );
 		spies.post = sandbox.spy( $, "post" );
 
-		// Inject the test element after the Modernizr.load calls in wb.js
-		// have finished.  This is required because the session timeout
-		// plugin relies on the i18n libraries being loaded.
-		setTimeout(function() {
-			$session = $( "<span class='wb-sessto'>" )
-				.data( "wet-boew", {
-					inactivity: 10000,
-					sessionalive: 10000,
-					refreshLimit: 42000,
-					refreshOnClick: true
-				})
-				.appendTo( wb.doc.find( "body" ) )
-				.trigger( "wb-init.wb-sessto" );
-			done();
-		}, 500 );
+		callback = done;
 
-		wb.doc.on( "inactivity.wb-sessto", function() {
+		$document.on( "inactivity.wb-sessto", function() {
 			$( ".wb-sessto-confirm.btn-primary" ).trigger( "click" );
 		});
+
+		$document.on( "wb-ready.wb-sessto", ".wb-sessto", function() {
+			if ( callback ) {
+				callback();
+			}
+		});
+
+		$session = $( "<span class='wb-sessto'></span>" )
+			.data( "wet-boew", {
+				inactivity: 10000,
+				sessionalive: 10000,
+				refreshLimit: 42000,
+				refreshOnClick: true
+			})
+			.appendTo( $document.find( "body" ))
+			.trigger( "wb-init.wb-sessto" );
 	});
 
 	/*
@@ -56,6 +62,7 @@ describe( "Session Timeout test suite", function() {
 	after(function() {
 		// Cleanup the test element
 		$session.remove();
+		$( "#wb-sessto-modal" ).remove();
 
 		// Restore the original behaviour of spies, server and timer
 		sandbox.restore();
@@ -137,7 +144,7 @@ describe( "Session Timeout test suite", function() {
 
 		it( "should trigger keepalive.wb-sessto on document click", function() {
 			clock.tick( 42010 );
-			wb.doc.trigger( "click" );
+			$document.trigger( "click" );
 			expect( spies.trigger.calledWith( "keepalive.wb-sessto" ) ).to.equal( true );
 		});
 
@@ -152,7 +159,7 @@ describe( "Session Timeout test suite", function() {
 		it( "should not trigger keepalive.wb-sessto on document click (refresh limit prevents)", function() {
 			spies.trigger.reset();
 
-			wb.doc.trigger( "click" );
+			$document.trigger( "click" );
 			expect( spies.trigger.calledWith( "keepalive.wb-sessto" ) ).to.equal( false );
 		});
 
@@ -160,21 +167,22 @@ describe( "Session Timeout test suite", function() {
 			spies.trigger.reset();
 			clock.tick( 42010 );
 
-			wb.doc.trigger( "click" );
+			$document.trigger( "click" );
 			expect( spies.trigger.calledWith( "keepalive.wb-sessto" ) ).to.equal( true );
 		});
 	});
 
 	describe( "refreshCallbackUrl", function() {
 
-		before(function() {
+		before(function( done ) {
 			// Setup the fake server response for all POST requests to foo.html
 			server = sandbox.useFakeServer();
 			server.respondWith( "POST", "foo.html", "true" );
 
+			callback = done;
+
 			// Add the session timeout element and trigger it's init'
-			$session = $( ".wb-sessto" )
-				.data( "wet-boew", {
+			$session.data( "wet-boew", {
 					sessionalive: 5000,
 					refreshCallbackUrl: "foo.html"
 				})

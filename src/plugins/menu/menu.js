@@ -20,7 +20,6 @@ var componentName = "wb-menu",
 	navCurrentEvent = "navcurr.wb",
 	focusEvent = "setfocus.wb",
 	menuItemSelector = "> a, > details > summary",
-	i18n, i18nText,
 	$document = wb.doc,
 
 	// Used for half second delay on showing/hiding menus because of mouse hover
@@ -49,20 +48,11 @@ var componentName = "wb-menu",
 			}
 			menuCount += 1;
 
-			// Only initialize the i18nText once
-			if ( !i18nText ) {
-				i18n = wb.i18n;
-				i18nText = {
-					searchMenus: i18n( "srch-menus" )
-				};
-			}
-
 			// Lets test to see if we have any menus to fetch
 			ajaxFetch = $elm.data( "ajax-fetch" );
 			if ( ajaxFetch ) {
-				$document.trigger({
+				$elm.trigger({
 					type: "ajax-fetch.wb",
-					element: $elm,
 					fetch: {
 						url: ajaxFetch
 					}
@@ -215,7 +205,7 @@ var componentName = "wb-menu",
 	 * @param {jQuery DOM element} $ajaxResult The AJAXed in menu content to import
 	 */
 	onAjaxLoaded = function( $elm, $ajaxResult ) {
-		var $ajaxed = !$ajaxResult ? $elm : $ajaxResult,
+		var $ajaxed = $ajaxResult && $ajaxResult.attr( "data-type" ) === "string" ? $ajaxResult : $elm,
 			$menubar = $ajaxed.find( ".menu" ),
 			$menu = $menubar.find( "> li > a" ),
 			target = $elm.data( "trgt" ),
@@ -309,8 +299,10 @@ var componentName = "wb-menu",
 
 		// Let's now populate the DOM since we have done all the work in a documentFragment
 		panelDOM.innerHTML = "<header class='modal-header'><div class='modal-title'>" +
-				i18nText.searchMenus + "</div></header><div class='modal-body'>" +
-				panel + "</div>";
+				document.getElementById( "wb-glb-mn" )
+					.getElementsByTagName( "h2" )[ 0 ]
+						.innerHTML +
+				"</div></header><div class='modal-body'>" + panel + "</div>";
 		panelDOM.className += " wb-overlay modal-content overlay-def wb-panel-r";
 		$panel
 			.trigger( "wb-init.wb-overlay" )

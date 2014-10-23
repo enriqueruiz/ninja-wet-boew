@@ -6,7 +6,7 @@
  */
 /* global jQuery, describe, it, expect, before, beforeEach, after */
 /* jshint unused:vars */
-(function( $, wb ) {
+(function( $, wb, undef ) {
 
 /*
  * Create a suite of related test cases using `describe`. Test suites can also be
@@ -14,21 +14,22 @@
  * teardown `after()` for more than one test suite (as is the case below.)
  */
 describe( "equalheights test suite", function() {
-	var $elm, $equalheights, $row1, $row2, $row3, height, minHeight, isInit, isSingleElm,
+	var $row, height, minHeight, callback, test,
 		$document = wb.doc,
+		$body = $document.find( "body" ),
 
 		/*
 		 * Used in $.each() to test the height of child elements in a given .wb-eqht element
 		 */
 		testHeight = function( idx ) {
-			$elm = $( this );
+			var $elm = $( this ),
 
-			// Re-initialize the variables every 2 elements.  This works because the test
-			// data only ever has 2 elements on a given baseline.
-			isInit = idx % 2 === 0;
+				// Re-initialize the variables every 2 elements. This works because the test
+				// data only ever has 2 elements on a given baseline.
+				isInit = idx % 2 === 0,
 
-			// Is this a case where only one element exists on a baseline?
-			isSingleElm = isInit && $elm.is( ":last-child" );
+				// Is this a case where only one element exists on a baseline?
+				isSingleElm = isInit && $elm.is( ":last-child" );
 
 			height = isInit ? $elm.height() : height;
 			minHeight = isInit ? parseInt( $elm.css( "min-height" ), 10 ) : minHeight;
@@ -41,41 +42,48 @@ describe( "equalheights test suite", function() {
 			}
 			expect( parseInt( $elm.css( "min-height" ), 10 ) ).to.equal( minHeight );
 			expect( $elm.height() ).to.equal( height );
+		},
+
+		defaultTest = function( $rows, done ) {
+			$row.each( testHeight );
+		},
+
+		addFixture = function( $elm, done ) {
+			callback = done;
+
+			$row = $elm
+				.appendTo( $body )
+				.trigger( "wb-init.wb-eqht" )
+				.children();
+		},
+
+		removeFixture = function() {
+			$row.parent().remove();
+			$row = undef;
 		};
 
 	/*
 	 * Before beginning the test suite, this function is executed once.
 	 */
 	before(function() {
-		// Add test data to the page
-		wb.doc
-			.find( "body" )
-			.append(
-				"<div class='wb-eqht row-1 test'>" +
-					"<div style='width:49%; float:left'>foo</div>" +
-					"<div style='width:49%; float:left'>bar</div>" +
-				"</div>" +
-				"<div class='wb-eqht row-2 test'>" +
-					"<div style='width:49%; float:left'>all</div>" +
-					"<div style='width:49%; float:left'>yours</div>" +
-					"<div style='width:49%; float:left'>bases</div>" +
-					"<div style='width:49%; float:left; height: 100px;'>are belong to us</div>" +
-				"</div>" +
-				"<div class='wb-eqht row-3 test'>" +
-					"<div style='width:49%; display: inline-block; height: 25px'></div>" +
-					"<div style='width:49%; display: inline-block; height: 50px'></div>" +
-					"<div style='width:49%; display: inline-block; height: 75px'></div>" +
-				"</div>" );
+		$document.on( "wb-updated.wb-eqht", function( event ) {
+			var currentTest = test || defaultTest;
+			if ( $row !== undef ) {
+				currentTest();
+				callback();
+			}
+		});
 
-		$equalheights = $( ".wb-eqht.test" );
+		$document.on( "wb-ready.wb-eqht", function() {
+			callback();
+		});
 	});
 
-	/*
-	 * After finishing the test suite, this function is executed once.
-	 */
-	after(function() {
-		// Remove test elements from the page
-		$equalheights.remove();
+	// Before each test, reset the height and min-height values of the elements
+	beforeEach(function() {
+		$row.css( "min-height", "" );
+		height = -1;
+		minHeight = -1;
 	});
 
 	/*
@@ -83,35 +91,39 @@ describe( "equalheights test suite", function() {
 	 */
 	describe( "resize float on same baseline", function() {
 
-		before(function() {
-			$row1 = $equalheights.filter( ".row-1" ).children();
+		before(function( done ) {
+			addFixture( $( "<div class='wb-eqht test'>" +
+				"<div style='width:49%; float:left;'>foo</div>" +
+				"<div style='width:49%; float:left;'>bar</div>" +
+			"</div>" ), done );
 		});
 
-		// Before each test, reset the height and min-height values of the elements
-		beforeEach(function() {
-			$row1.css( "min-height", "" );
-			height = -1;
-			minHeight = -1;
+		after(function() {
+			removeFixture();
 		});
 
-		it( "should resize on txt-rsz.wb event", function() {
+		it( "should resize on txt-rsz.wb event", function( done ) {
+			callback = done;
+
 			$document.trigger( "txt-rsz.wb" );
-			$row1.each( testHeight );
 		});
 
-		it( "should resize on win-rsz-width.wb event", function() {
+		it( "should resize on win-rsz-width.wb event", function( done ) {
+			callback = done;
+
 			$document.trigger( "win-rsz-width.wb" );
-			$row1.each( testHeight );
 		});
 
-		it( "should resize on win-rsz-height.wb event", function() {
+		it( "should resize on win-rsz-height.wb event", function( done ) {
+			callback = done;
+
 			$document.trigger( "win-rsz-height.wb" );
-			$row1.each( testHeight );
 		});
 
-		it( "should resize on wb-updated.wb-tables event", function() {
+		it( "should resize on wb-updated.wb-tables event", function( done ) {
+			callback = done;
+
 			$document.trigger( "wb-updated.wb-tables" );
-			$row1.each( testHeight );
 		});
 	});
 
@@ -120,35 +132,41 @@ describe( "equalheights test suite", function() {
 	 */
 	describe( "resize multiple floated baselines", function() {
 
-		before(function() {
-			$row2 = $equalheights.filter( ".row-2" ).children();
+		before(function( done ) {
+			addFixture( $( "<div class='wb-eqht test'>" +
+				"<div style='width:49%; float:left'>all</div>" +
+				"<div style='width:49%; float:left'>yours</div>" +
+				"<div style='width:49%; float:left'>bases</div>" +
+				"<div style='width:49%; float:left; height: 100px;'>are belong to us</div>" +
+			"</div>" ), done );
 		});
 
-		// Before each test, reset the height and min-height values of the elements
-		beforeEach(function() {
-			$row2.css( "min-height", "" );
-			height = -1;
-			minHeight = -1;
+		after(function() {
+			removeFixture();
 		});
 
-		it( "should resize on txt-rsz.wb event", function() {
+		it( "should resize on txt-rsz.wb event", function( done ) {
+			callback = done;
+
 			$document.trigger( "txt-rsz.wb" );
-			$row2.each( testHeight );
 		});
 
-		it( "should resize on win-rsz-width.wb event", function() {
+		it( "should resize on win-rsz-width.wb event", function( done ) {
+			callback = done;
+
 			$document.trigger( "win-rsz-width.wb" );
-			$row2.each( testHeight );
 		});
 
-		it( "should resize on win-rsz-height.wb event", function() {
+		it( "should resize on win-rsz-height.wb event", function( done ) {
+			callback = done;
+
 			$document.trigger( "win-rsz-height.wb" );
-			$row2.each( testHeight );
 		});
 
-		it( "should resize on wb-updated.wb-tables event", function() {
+		it( "should resize on wb-updated.wb-tables event", function( done ) {
+			callback = done;
+
 			$document.trigger( "wb-updated.wb-tables" );
-			$row2.each( testHeight );
 		});
 	});
 
@@ -157,36 +175,85 @@ describe( "equalheights test suite", function() {
 	 */
 	describe( "resize multiple inline-block baselines", function() {
 
-		before(function() {
-			$row3 = $equalheights.filter( ".row-3" ).children();
+		before(function( done ) {
+			addFixture( $( "<div class='wb-eqht test'>" +
+					"<div style='width:49%; display: inline-block; height: 25px'></div>" +
+					"<div style='width:49%; display: inline-block; height: 50px'></div>" +
+					"<div style='width:49%; display: inline-block; height: 75px'></div>" +
+				"</div>" ), done );
 		});
 
-		// Before each test, reset the height and min-height values of the elements
-		beforeEach(function() {
-			$row3.css( "min-height", "" );
-			height = -1;
-			minHeight = -1;
+		after(function() {
+			removeFixture();
 		});
 
-		it( "should resize on txt-rsz.wb event", function() {
+		it( "should resize on txt-rsz.wb event", function( done ) {
+			callback = done;
+
 			$document.trigger( "txt-rsz.wb" );
-			$row3.each( testHeight );
 		});
 
-		it( "should resize on win-rsz-width.wb event", function() {
+		it( "should resize on win-rsz-width.wb event", function( done ) {
+			callback = done;
+
 			$document.trigger( "win-rsz-width.wb" );
-			$row3.each( testHeight );
 		});
 
-		it( "should resize on win-rsz-height.wb event", function() {
+		it( "should resize on win-rsz-height.wb event", function( done ) {
+			callback = done;
+
 			$document.trigger( "win-rsz-height.wb" );
-			$row3.each( testHeight );
 		});
 
-		it( "should resize on wb-updated.wb-tables event", function() {
+		it( "should resize on wb-updated.wb-tables event", function( done ) {
+			callback = done;
+
 			$document.trigger( "wb-updated.wb-tables" );
-			$row3.each( testHeight );
 		});
+	});
+
+	describe( "resize nested elements", function() {
+
+		before(function( done ) {
+			addFixture( $( "<div class='wb-eqht test'>" +
+				"<div style='width:49%; float:left; height: 50px'><div class='hght-inhrt'>foo</div></div>" +
+				"<div style='width:49%; float:left;'><div>bar</div></div>" +
+			"</div>" ), done );
+
+			test = function() {
+				var $nestedBlocks = $row.find( ".hght-inhrt" ),
+					$nestedNonEqBlocks = $row.find(":not(.hght-inhrt)"),
+					nestedLength = $nestedBlocks.length,
+					nestedNonEqLength = $nestedNonEqBlocks.length,
+					$nested, n;
+
+				expect( nestedLength ).to.be.greaterThan( 0 );
+				expect( nestedNonEqLength ).to.be.greaterThan( 0 );
+
+				for ( n = 0; n < nestedLength; n += 1 ) {
+					$nested = $nestedBlocks.eq( n );
+					expect( $nested.height() ).to.be.equal( $nested.parent().height() );
+				}
+
+				for ( n = 0; n < nestedNonEqLength; n += 1 ) {
+					$nested = $nestedNonEqBlocks.eq( n );
+					expect( $nested.height() ).to.be.lessThan( $nested.parent().height() );
+				}
+			};
+		});
+
+		after(function() {
+			removeFixture();
+
+			test = null;
+		});
+
+		it( "should resize nested elements with the 'hght-inhrt' class", function( done ) {
+			callback = done;
+
+			$document.trigger( "txt-rsz.wb" );
+		});
+
 	});
 });
 

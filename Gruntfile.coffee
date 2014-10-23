@@ -14,27 +14,17 @@ module.exports = (grunt) ->
 	)
 
 	@registerTask(
-		"travis"
-		"Default task that runs the core unminified build"
-		[
-			"dist"
-			"test-mocha"
-			"htmllint"
-		]
-	)
-
-	@registerTask(
 		"dist"
 		"Produces the production files"
 		[
-			"checkDependencies"
 			"test"
 			"build"
 			"minify"
 			"pages:theme"
-			"pages:docs"
-			"pages:versions"
+			"docs-min"
 			"demos-min"
+			"htmllint"
+			"bootlint"
 		]
 	)
 
@@ -42,6 +32,7 @@ module.exports = (grunt) ->
 		"build"
 		"Run full build."
 		[
+			"checkDependencies"
 			"clean:dist"
 			"assets"
 			"css"
@@ -63,11 +54,13 @@ module.exports = (grunt) ->
 	@registerTask(
 		"deploy"
 		"Build and deploy artifacts to wet-boew-dist"
-		[
-			"dist"
-			"copy:deploy"
-			"gh-pages:travis"
-		]
+		->
+			if process.env.TRAVIS_PULL_REQUEST isnt true and process.env.DIST_REPO isnt `undefined` and ( process.env.TRAVIS_TAG isnt `undefined` or process.env.TRAVIS_BRANCH is "master" )
+				grunt.task.run [
+					"copy:deploy"
+					"gh-pages:travis"
+					"wb-update-examples"
+				]
 	)
 
 	@registerTask(
@@ -82,10 +75,14 @@ module.exports = (grunt) ->
 	@registerTask(
 		"saucelabs"
 		"Run tests on SauceLabs. Currently only for Travis builds"
-		[
-			"pre-mocha"
-			"saucelabs-mocha"
-		]
+		->
+			# TODO: Add error message when TRAVIS_SECURE_VARS is fixed (see https://github.com/wet-boew/wet-boew/pull/6108#discussion_r18190951)
+			if process.env.SAUCE_USERNAME isnt `undefined` and process.env.SAUCE_ACCESS_KEY isnt `undefined`
+				grunt.task.run [
+					"pre-mocha"
+					"saucelabs-mocha"
+				]
+
 	)
 
 	@registerTask(
@@ -180,6 +177,33 @@ module.exports = (grunt) ->
 	)
 
 	@registerTask(
+		"docs"
+		"INTERNAL: Create unminified docs"
+		[
+			"pages:docs"
+			"copy:docs"
+		]
+	)
+
+	@registerTask(
+		"docs-min"
+		"INTERNAL: Create minified docs"
+		[
+			"docs"
+			"cssmin:docs_min"
+			"copy:docs_min"
+		]
+	)
+
+	@registerTask(
+		"theme"
+		"INTERNAL: Create unminified theme"
+		[
+			"pages:theme"
+		]
+	)
+
+	@registerTask(
 		"demos-min"
 		"INTERNAL: Create minified demos"
 		[
@@ -212,12 +236,15 @@ module.exports = (grunt) ->
 	@registerTask(
 		"pre-mocha"
 		"INTERNAL: prepare for running Mocha unit tests"
-		[
-			"copy:test"
-			"minify"
-			"pages:test"
-			"connect:test"
-		]
+		() ->
+			grunt.task.run [
+				"copy:test"
+				"pages:test"
+			]
+
+			#Prevents multiple instances of connect from running
+			if grunt.config.get('connect.test.options.port') is `undefined`
+				grunt.task.run "connect:test"
 	)
 
 	@registerTask(
@@ -227,14 +254,19 @@ module.exports = (grunt) ->
 			if target == "min"
 				# Run the minifier and update asset paths
 				grunt.task.run(
-					"htmlcompressor"
+					"htmlmin"
 					"useMinAssets"
 				);
 			else
+
+				if target != "test" and grunt.config("i18n_csv.assemble.locales") == undefined
+					grunt.task.run(
+						"i18n_csv:assemble"
+					)
+
 				# Only use a target path for assemble if pages received one too
 				target = if target then ":" + target else ""
 				grunt.task.run(
-					"i18n_csv:assemble"
 					"assemble" + target
 				);
 	)
@@ -290,6 +322,7 @@ module.exports = (grunt) ->
 							else
 								-1
 					)
+		deployBranch: "v4.0-dist"
 
 		# Task configuration.
 		wget:
@@ -355,7 +388,7 @@ module.exports = (grunt) ->
 						lang = filepath.replace "dist/unmin/js/i18n/", ""
 						# jQuery validation uses an underscore for locals
 						lang = lang.replace "_", "-"
-						validationPath = "lib/jquery-validation/localization/"
+						validationPath = "lib/jquery-validation/src/localization/"
 
 						# Check and append message file
 						messagesPath = validationPath + "messages_" + lang
@@ -418,18 +451,19 @@ module.exports = (grunt) ->
 
 			theme:
 				options:
+					flatten: true
 					plugins: [
 						"assemble-contrib-i18n"
 					]
 					i18n:
 						languages: "<%= i18n_csv.assemble.locales %>"
 						templates: [
-							"theme/**/*.hbs"
+							"theme/site/pages/**/*.hbs"
 							# Don't run i18n transforms on language specific templates
 							"!theme/**/*-en.hbs"
 							"!theme/**/*-fr.hbs"
 						]
-				dest: "dist/unmin"
+				dest: "dist/unmin/theme/"
 				src: [
 					"theme/**/*-en.hbs"
 					"theme/**/*-fr.hbs"
@@ -469,6 +503,7 @@ module.exports = (grunt) ->
 						cwd: "site/pages"
 						src: [
 							"**/*.hbs",
+							"!**/test.hbs"
 							"!ajax/**/*.hbs"
 							"!docs/**/*.hbs"
 						]
@@ -477,15 +512,15 @@ module.exports = (grunt) ->
 				]
 
 			test:
-				options:
-					environment:
-						root: "/v4.0-ci/unmin"
-						jqueryVersion: "<%= jqueryVersion.version %>"
-						jqueryOldIEVersion: "<%= jqueryOldIEVersion.version %>"
-					assets: "dist/unmin"
 				expand: true
 				cwd: "site/pages"
 				src: "test/test.hbs"
+				dest: "dist/unmin"
+
+			splash:
+				expand: true
+				cwd: "site/pages"
+				src: "index.hbs"
 				dest: "dist/unmin"
 
 			docs:
@@ -496,22 +531,21 @@ module.exports = (grunt) ->
 				dest: "dist/unmin"
 				expand: true
 
-			versions:
-				cwd: "site/pages"
-				src: [
-					"docs/versions/**/*.hbs"
-				]
-				dest: "dist/unmin"
-				expand: true
-
 		#Generate the sprites including the stylesheet
 		sprites:
 			share:
 				src: [
 					"src/plugins/share/sprites/*.png"
 				]
-				css: "src/plugins/share/sprites/_sprites.scss"
+				css: "src/plugins/share/sprites/_sprites_share.scss"
 				map: "src/plugins/share/assets/sprites_share.png"
+				output: "scss"
+			geomap:
+				src: [
+					"src/plugins/geomap/sprites/*.png"
+				]
+				css: "src/plugins/geomap/sprites/_sprites_geomap.scss"
+				map: "src/plugins/geomap/assets/sprites_geomap.png"
 				output: "scss"
 
 		# Compiles the Sass files
@@ -564,6 +598,12 @@ module.exports = (grunt) ->
 					cwd: "src/other"
 					src: "**/demo/*.scss"
 					dest: "dist/unmin/demos/"
+					ext: ".css"
+				,
+					expand: true
+					cwd: "site/pages/docs/css"
+					src: "**/*.scss"
+					dest: "dist/unmin/docs/css/"
 					ext: ".css"
 				]
 
@@ -623,6 +663,11 @@ module.exports = (grunt) ->
 					src: "**/*.css"
 					dest: "dist/unmin/demos/"
 					expand: true
+				,
+					cwd: "dist/unmin/docs"
+					src: "**/*.css"
+					dest: "dist/unmin/docs/"
+					expand: true
 				]
 
 			# Only IE8 support
@@ -662,6 +707,7 @@ module.exports = (grunt) ->
 				"overqualified-elements": false
 				"qualified-headings": false
 				"regex-selectors": false
+				"selector-max-approaching": false
 				# Some Bootstrap mixins end up listing all the longhand properties
 				"shorthand": false
 				"text-indent": false
@@ -800,11 +846,22 @@ module.exports = (grunt) ->
 				dest: "dist/demos/"
 				ext: ".min.css"
 
-		htmlcompressor:
+			docs_min:
+				options:
+					banner: "@charset \"utf-8\";\n<%= banner %>"
+				expand: true
+				cwd: "dist/unmin/docs/"
+				src: [
+					"**/*.css"
+				]
+				dest: "dist/docs/"
+				ext: ".min.css"
+
+		htmlmin:
 			options:
-				type: "html"
-				concurrentProcess: 5
+				collapseWhitespace: true
 				preserveLineBreaks: true
+				preventAttributesEscaping: true
 			all:
 				cwd: "dist/unmin"
 				src: [
@@ -861,6 +918,24 @@ module.exports = (grunt) ->
 					"!dist/unmin/test/**/*.html"
 				]
 
+		bootlint:
+			all:
+				options:
+					relaxerror: [
+						# We recommend handling this through the server headers so it never appears in the markup
+						"<head> is missing X-UA-Compatible <meta> tag that disables old IE compatibility modes"
+						# TODO: The rules below should be resolved
+						"Only columns (.col-*-*) may be children of `.row`s"
+						"Unable to locate jQuery, which is required for Bootstrap's JavaScript plugins to work"
+						"Columns (.col-*-*) can only be children of `.row`s or `.form-group`s"
+					]
+				src: [
+					"dist/**/*.html"
+					# Ignore HTML fragments used for the menus
+					"!dist/**/assets/*.html"
+					"!dist/**/ajax/*.html"
+				]
+
 		ie8csscleaning:
 			min:
 				expand: true
@@ -871,43 +946,44 @@ module.exports = (grunt) ->
 				dest: "dist/css"
 
 		modernizr:
-			devFile: "lib/modernizr/modernizr-custom.js"
-			outputFile: "lib/modernizr/modernizr-custom.js"
-			extra:
-				shiv: false
-				printshiv: false
-				load: true
-				mq: true
-				css3: true
-				input: true
-				inputtypes: true
-				svg: true
-				html5: false
-				cssclasses: true
-				csstransitions: true
-				fontface: true
-				backgroundsize: true
-				borderimage: true
-			extensibility:
-				addtest: false
-				prefixed: false
-				teststyles: true
-				testprops: true
-				testallprops: true
-				hasevents: true
-				prefixes: true
-				domprefixes: true
-			tests: [
-				"elem_details"
-				"elem_progress_meter"
-				"mathml"
-			]
-			parseFiles: false
-			matchCommunityTests: false
+			dist:
+				devFile: "lib/modernizr/modernizr-custom.js"
+				outputFile: "lib/modernizr/modernizr-custom.js"
+				extra:
+					shiv: false
+					printshiv: false
+					load: true
+					mq: true
+					css3: true
+					input: true
+					inputtypes: true
+					svg: true
+					html5: false
+					cssclasses: true
+					csstransitions: true
+					fontface: true
+					backgroundsize: true
+					borderimage: true
+				extensibility:
+					addtest: false
+					prefixed: false
+					teststyles: true
+					testprops: true
+					testallprops: true
+					hasevents: true
+					prefixes: true
+					domprefixes: true
+				tests: [
+					"elem_details"
+					"elem_progress_meter"
+					"mathml"
+				]
+				parseFiles: false
+				matchCommunityTests: false
 
 		copy:
 			bootstrap:
-				cwd: "lib/bootstrap-sass-official/vendor/assets/fonts/bootstrap"
+				cwd: "lib/bootstrap-sass-official/assets/fonts/bootstrap"
 				src: "*.*"
 				dest: "dist/unmin/fonts"
 				expand: true
@@ -975,8 +1051,8 @@ module.exports = (grunt) ->
 						"flot/jquery.flot.pie.js"
 						"flot/jquery.flot.canvas.js"
 						"SideBySideImproved/jquery.flot.orderBars.js"
-						"jquery-validation/jquery.validate.js"
-						"jquery-validation/additional-methods.js"
+						"jquery-validation/dist/jquery.validate.js"
+						"jquery-validation/dist/additional-methods.js"
 						"magnific-popup/dist/jquery.magnific-popup.js"
 						"google-code-prettify/src/*.js"
 						"DataTables/media/js/jquery.dataTables.js"
@@ -1040,6 +1116,12 @@ module.exports = (grunt) ->
 					expand: true
 				]
 
+			docs:
+				cwd: "site/pages/docs"
+				src: "**/img/*.*"
+				dest: "dist/unmin/docs"
+				expand: true
+
 			themeAssets:
 				cwd: "theme/"
 				src: "assets/*.*"
@@ -1069,6 +1151,12 @@ module.exports = (grunt) ->
 					"!**/*.js"
 				]
 				dest: "dist/demos/"
+				expand: true
+
+			docs_min:
+				cwd: "dist/unmin/docs"
+				src: "**/img/*.*"
+				dest: "dist/docs"
 				expand: true
 
 			deploy:
@@ -1126,16 +1214,6 @@ module.exports = (grunt) ->
 				options:
 					livereload: true
 
-			versions:
-				files: [
-					"site/pages/docs/versions/**/*.hbs"
-				]
-				tasks: [
-					"pages:versions"
-				]
-				options:
-					livereload: true
-
 		jshint:
 			options:
 				jshintrc: ".jshintrc"
@@ -1163,18 +1241,15 @@ module.exports = (grunt) ->
 			server:
 				options:
 					base: "dist"
-					middleware: (connect, options) ->
-						middlewares = []
-						middlewares.push(connect.compress(
+					middleware: (connect, options, middlewares) ->
+						middlewares.unshift(connect.compress(
 							filter: (req, res) ->
 								/json|text|javascript|dart|image\/svg\+xml|application\/x-font-ttf|application\/vnd\.ms-opentype|application\/vnd\.ms-fontobject/.test(res.getHeader('Content-Type'))
 						))
 
-						middlewares.push (req, res, next) ->
+						middlewares.unshift (req, res, next) ->
 							req.url = req.url.replace( "/v4.0-ci/", "/" )
 							next()
-
-						middlewares.push(connect.static(options.base));
 
 						# Serve the custom error page
 						middlewares.push (req, res) ->
@@ -1193,13 +1268,6 @@ module.exports = (grunt) ->
 			test:
 				options:
 					base: "."
-					middleware: (connect, options) ->
-						middlewares = []
-
-						# Serve static files.
-						middlewares.push connect.static( options.base )
-
-						middlewares
 
 		i18n_csv:
 			options:
@@ -1218,12 +1286,12 @@ module.exports = (grunt) ->
 			all:
 				options:
 					reporter: "Spec"
-					urls: ["http://localhost:8000/dist/unmin/test/test.html"]
+					urls: ["http://localhost:8000/dist/unmin/test/test.html?txthl=just%20some%7Ctest"]
 
 		"saucelabs-mocha":
 			all:
 				options:
-					urls: ["http://localhost:8000/dist/unmin/test/test.html"]
+					urls: "<%= mocha.all.options.urls %>"
 					throttled: 3
 					browsers: grunt.file.readJSON "browsers.json"
 					testname: process.env.TRAVIS_COMMIT_MSG
@@ -1238,6 +1306,7 @@ module.exports = (grunt) ->
 						"single-window": true
 						"record-screenshots": false
 						"capture-html": true
+					maxRetries: 3
 
 		"gh-pages":
 			options:
@@ -1246,10 +1315,18 @@ module.exports = (grunt) ->
 
 			travis:
 				options:
-					repo: "https://" + process.env.GH_TOKEN + "@github.com/wet-boew/wet-boew-dist.git"
-					branch: process.env.build_branch
-					message: "Travis build " + process.env.TRAVIS_BUILD_NUMBER
-					silent: true
+					repo: process.env.DIST_REPO
+					branch: "<%= deployBranch %>"
+					message: ((
+						if process.env.TRAVIS_TAG
+							"Production files for the " + process.env.TRAVIS_TAG + " maintenance release"
+						else
+							"Travis build " + process.env.TRAVIS_BUILD_NUMBER
+					))
+					silent: true,
+					tag: ((
+						if process.env.TRAVIS_TAG then process.env.TRAVIS_TAG else false
+					))
 				src: [
 					"**/*.*"
 				]
@@ -1259,6 +1336,14 @@ module.exports = (grunt) ->
 					"**/*.*"
 				]
 
+		"wb-update-examples":
+			travis:
+				options:
+					repo: process.env.DEMOS_REPO
+					branch: process.env.DEMOS_BRANCH
+					message: "<%= grunt.config('gh-pages.travis.options.message') %>"
+					silent: true
+
 		checkDependencies:
 			all:
 				options:
@@ -1267,6 +1352,7 @@ module.exports = (grunt) ->
 	# These plugins provide necessary tasks.
 	@loadNpmTasks "assemble"
 	@loadNpmTasks "grunt-autoprefixer"
+	@loadNpmTasks "grunt-bootlint"
 	@loadNpmTasks "grunt-check-dependencies"
 	@loadNpmTasks "grunt-contrib-clean"
 	@loadNpmTasks "grunt-contrib-concat"
@@ -1274,13 +1360,13 @@ module.exports = (grunt) ->
 	@loadNpmTasks "grunt-contrib-copy"
 	@loadNpmTasks "grunt-contrib-csslint"
 	@loadNpmTasks "grunt-contrib-cssmin"
+	@loadNpmTasks "grunt-contrib-htmlmin"
 	@loadNpmTasks "grunt-contrib-imagemin"
 	@loadNpmTasks "grunt-contrib-jshint"
 	@loadNpmTasks "grunt-contrib-uglify"
 	@loadNpmTasks "grunt-contrib-watch"
 	@loadNpmTasks "grunt-gh-pages"
 	@loadNpmTasks "grunt-html"
-	@loadNpmTasks "grunt-htmlcompressor"
 	@loadNpmTasks "grunt-i18n-csv"
 	@loadNpmTasks "grunt-imagine"
 	@loadNpmTasks "grunt-jscs"
@@ -1289,6 +1375,7 @@ module.exports = (grunt) ->
 	@loadNpmTasks "grunt-sass"
 	@loadNpmTasks "grunt-saucelabs"
 	@loadNpmTasks "grunt-wget"
+	@loadNpmTasks "grunt-wet-boew-postbuild"
 
 	# Load custom grunt tasks form the tasks directory
 	@loadTasks "tasks"

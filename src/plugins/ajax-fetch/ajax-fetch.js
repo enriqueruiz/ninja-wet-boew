@@ -17,22 +17,26 @@ var $document = wb.doc;
 
 // Event binding
 $document.on( "ajax-fetch.wb", function( event ) {
-	var caller = event.element,
+
+	// TODO: Remove event.element in future versions
+	var caller = event.element || event.target,
 		fetchOpts = event.fetch,
 		fetchData;
 
 	// Filter out any events triggered by descendants
-	if ( event.currentTarget === event.target ) {
+	if ( caller = event.target || event.currentTarget === event.target ) {
 		$.ajax( fetchOpts )
 			.done(function( response, status, xhr ) {
+				var responseType = typeof response;
+
 				fetchData = {
 					response: response,
 					status: status,
 					xhr: xhr
 				};
 
-				fetchData.pointer = $( "<div id='" + wb.guid() + "' />" )
-										.append( typeof response === "string" ? response : "" );
+				fetchData.pointer = $( "<div id='" + wb.guid() + "' data-type='" + responseType + "' />" )
+										.append( responseType === "string" ? response : "" );
 
 				$( caller ).trigger({
 					type: "ajax-fetched.wb",

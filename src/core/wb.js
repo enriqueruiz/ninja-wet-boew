@@ -124,6 +124,7 @@ var getUrlParts = function( url ) {
 		"/assets": $homepath + "/../assets",
 		"/templates": $homepath + "/assets/templates",
 		"/deps": $homepath + "/deps",
+		lang: lang,
 		mode: $mode,
 		doc: $( document ),
 		win: $( window ),
@@ -255,19 +256,34 @@ var getUrlParts = function( url ) {
 		timerpoke: function() {
 			var selectorsLocal = wb.selectors.slice( 0 ),
 				len = selectorsLocal.length,
-				selector, $elms, i;
+				selector, currentSelector, $elms, elmsLength, i;
 
 			for ( i = 0; i !== len; i += 1 ) {
 				selector = selectorsLocal[ i ];
+				currentSelector = selector;
 				$elms = $( selector );
 
 				// If the selector returns elements, trigger a timerpoke event
-				if ( $elms.length !== 0 ) {
-					$elms.trigger( "timerpoke.wb" );
+				elmsLength = $elms.length;
+				if ( elmsLength !== 0 ) {
+					while ( elmsLength !== 0 ) {
+
+						currentSelector += " " + selector;
+
+						// Filter out nested elements
+						$elms = $elms.filter( ":not(" + currentSelector + ")" );
+						$elms.trigger( "timerpoke.wb" );
+
+						// Handle nested elements
+						elmsLength -= $elms.length;
+						if ( elmsLength !== 0 ) {
+							$elms = $( currentSelector );
+						}
+					}
 
 				// If the selector returns no elements, remove the selector
 				} else {
-					this.remove( selector );
+					wb.remove( selector );
 				}
 			}
 		},
@@ -344,21 +360,22 @@ yepnope.addPrefix( "site", function( resourceObj ) {
  * @prefix: plyfll! - builds the path for the polyfill resource
  */
 yepnope.addPrefix( "plyfll", function( resourceObj ) {
-	var path;
+	var path,
+		url = resourceObj.url;
 
-	if ( disabled ) {
+	if ( disabled && url.indexOf( "svg" ) === -1 ) {
 		resourceObj.bypass = true;
 	} else if ( !$mode ) {
-		resourceObj.url = resourceObj.url.replace( ".min", "" );
+		url = url.replace( ".min", "" );
 	}
 
-	if ( resourceObj.url.indexOf( ".css" ) !== -1 ) {
+	if ( url.indexOf( ".css" ) !== -1 ) {
 		resourceObj.forceCSS = true;
 		path = $homecss;
 	} else {
 		path = $homepath;
 	}
-	resourceObj.url = path + "/polyfills/" + resourceObj.url;
+	resourceObj.url = path + "/polyfills/" + url;
 
 	return resourceObj;
 });

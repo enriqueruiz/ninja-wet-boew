@@ -28,16 +28,20 @@ var componentName = "wb-txthl",
 		// returns DOM object = proceed with init
 		// returns undefined = do not proceed with init (e.g., already initialized)
 		var elm = wb.init( event, componentName, selector ),
+			params = wb.pageUrlParts.params,
 			searchCriteria, newText;
 
 		if ( elm ) {
-
-			searchCriteria = wb.pageUrlParts.params.txthl;
+			if ( event.txthl ) {
+				searchCriteria = $.isArray(event.txthl) ? event.txthl.join( "|" ) : event.txthl;
+			} else if ( params && params.txthl ) {
+				searchCriteria = decodeURIComponent(
+					wb.pageUrlParts.params.txthl
+						.replace( /^\s+|\s+$|\|+|\"|\(|\)/g, "" ).replace( /\++/g, "|" )
+				);
+			}
 
 			if ( searchCriteria ) {
-				// clean up the search criteria and OR each value
-				searchCriteria = searchCriteria.replace( /^\s+|\s+$|\|+|\"|\(|\)/g, "" ).replace( /\++/g, "|" );
-				searchCriteria = decodeURIComponent( searchCriteria );
 
 				// Make sure that we're not checking for text within a tag; only the text outside of tags.
 				searchCriteria = "(?=([^>]*<))([\\s'])?(" + searchCriteria + ")(?!>)";
@@ -46,10 +50,10 @@ var componentName = "wb-txthl",
 					return ( !group2 ? "" : group2 ) + "<span class='txthl'><mark>" + group3 + "</mark></span>";
 				});
 				elm.innerHTML = newText;
-
-				// Identify that initialization has completed
-				wb.ready( $( elm ), componentName );
 			}
+
+			// Identify that initialization has completed
+			wb.ready( $( elm ), componentName );
 		}
 	};
 
