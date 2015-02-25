@@ -21,7 +21,6 @@ var componentName = "wb-toggle",
 	toggleEvent = "toggle" + selector,
 	toggledEvent = "toggled" + selector,
 	setFocusEvent = "setfocus.wb",
-	elmIdx = 0,
 	states = {},
 	$document = wb.doc,
 	$window = wb.win,
@@ -40,12 +39,10 @@ var componentName = "wb-toggle",
 		// Start initialization
 		// returns DOM object = proceed with init
 		// returns undefined = do not proceed with init (e.g., already initialized)
-		var link = wb.init( event, componentName, selector ),
+		var link = wb.init( event, componentName, selector, true ),
 			$link, data;
 
 		if ( link ) {
-			elmIdx += 1;
-
 			// Merge the elements settings with the defaults
 			$link = $( link );
 			data = $.extend( {}, defaults, $link.data( "toggle" ) );
@@ -64,6 +61,10 @@ var componentName = "wb-toggle",
 				initPrint( $link, data );
 			}
 
+			if ( data.state ) {
+				setState( $link, data, data.state );
+			}
+
 			// Identify that initialization has completed
 			wb.ready( $link, componentName );
 		}
@@ -77,8 +78,7 @@ var componentName = "wb-toggle",
 	initAria = function( link, data ) {
 		var i, len, elm, elms, parent, tabs, tab, panel, isOpen,
 			ariaControls = "",
-			hasOpen = false,
-			prefix = "wb-" + elmIdx;
+			hasOpen = false;
 
 		// Group toggle elements with a parent are assumed to be a tablist
 		if ( data.group != null && data.parent != null ) {
@@ -86,7 +86,14 @@ var componentName = "wb-toggle",
 
 			// Check that the tablist widget hasn't already been initialized
 			if ( parent.getAttribute( "role" ) !== "tablist" ) {
-				parent.setAttribute( "role", "tablist" );
+
+				// Only apply the tablist role if the parent is not the tabbed interface container
+				// or the page is currently in "smallview", "xsmallview" or "xxsmallview"
+				if ( parent.className.indexOf( "wb-tabs" ) === -1 ||
+					document.documentElement.className.indexOf( "smallview" ) !== -1 ) {
+					parent.setAttribute( "role", "tablist" );
+				}
+
 				elms = parent.querySelectorAll( data.group );
 				tabs = parent.querySelectorAll( data.group + " " + selectorTab );
 
@@ -109,7 +116,7 @@ var componentName = "wb-toggle",
 					}
 
 					if ( !tab.getAttribute( "id" ) ) {
-						tab.setAttribute( "id", prefix + i );
+						tab.setAttribute( "id", wb.getId() );
 					}
 					tab.setAttribute( "role", "tab" );
 					tab.setAttribute( "aria-selected", isOpen );
@@ -135,7 +142,7 @@ var componentName = "wb-toggle",
 			for ( i = 0, len = elms.length; i !== len; i += 1 ) {
 				elm = elms[ i ];
 				if ( !elm.id ) {
-					elm.id = prefix + i;
+					elm.id = wb.getId();
 				}
 				ariaControls += elm.id + " ";
 			}
@@ -151,12 +158,6 @@ var componentName = "wb-toggle",
 	initPersist = function( $link, data ) {
 		var state,
 			link = $link[ 0 ];
-
-		// Make sure the toggle link has an ID.
-		// This will be used as part of the unique storage key.
-		if ( !link.id ) {
-			link.id = "wb-" + elmIdx;
-		}
 
 		// Store the persistence type and key for later use
 		data.persist = data.persist === "session" ? sessionStorage : localStorage;
@@ -200,7 +201,7 @@ var componentName = "wb-toggle",
 	 * @param {jQuery Event} event The event that triggered this invocation
 	 */
 	click = function( event ) {
-		var $link = $( event.target );
+		var $link = $( event.currentTarget );
 
 		$link.trigger( toggleEvent, $link.data( "toggle" ) );
 		event.preventDefault();

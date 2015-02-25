@@ -35,9 +35,9 @@ module.exports = (grunt) ->
 			"checkDependencies"
 			"clean:dist"
 			"assets"
+			"sprites"
 			"css"
 			"js"
-			"imagemin"
 		]
 	)
 
@@ -48,6 +48,7 @@ module.exports = (grunt) ->
 			"js-min"
 			"css-min"
 			"assets-min"
+			"imagemin"
 		]
 	)
 
@@ -55,7 +56,7 @@ module.exports = (grunt) ->
 		"deploy"
 		"Build and deploy artifacts to wet-boew-dist"
 		->
-			if process.env.TRAVIS_PULL_REQUEST isnt true and process.env.DIST_REPO isnt `undefined` and ( process.env.TRAVIS_TAG isnt `undefined` or process.env.TRAVIS_BRANCH is "master" )
+			if process.env.TRAVIS_PULL_REQUEST is "false" and process.env.DIST_REPO isnt `undefined` and ( process.env.TRAVIS_TAG isnt "" or process.env.TRAVIS_BRANCH is "master" )
 				grunt.task.run [
 					"copy:deploy"
 					"gh-pages:travis"
@@ -80,7 +81,7 @@ module.exports = (grunt) ->
 			if process.env.SAUCE_USERNAME isnt `undefined` and process.env.SAUCE_ACCESS_KEY isnt `undefined`
 				grunt.task.run [
 					"pre-mocha"
-					"saucelabs-mocha"
+					(if process.env.TRAVIS is "true" then "saucelabs-mocha:travis" else "saucelabs-mocha:local")
 				]
 
 	)
@@ -97,7 +98,8 @@ module.exports = (grunt) ->
 		"server"
 		"Run the Connect web server for local repo"
 		[
-			"connect:server:keepalive"
+			"connect:server"
+			"watch"
 		]
 	)
 
@@ -139,11 +141,10 @@ module.exports = (grunt) ->
 		"css"
 		"INTERNAL: Compiles Sass and copies third party CSS to the dist folder"
 		[
-			"sprites"
-			"sass:all"
+			"sass"
 			"autoprefixer"
 			"csslint:unmin"
-			"concat:css_addBanners"
+			"usebanner:css"
 		]
 	)
 
@@ -153,7 +154,7 @@ module.exports = (grunt) ->
 		[
 			"cssmin:dist"
 			"cssmin:distIE8"
-			"ie8csscleaning"
+			"cssmin_ie8_clean"
 		]
 	)
 
@@ -238,6 +239,7 @@ module.exports = (grunt) ->
 		"INTERNAL: prepare for running Mocha unit tests"
 		() ->
 			grunt.task.run [
+				"concat:test"
 				"copy:test"
 				"pages:test"
 			]
@@ -290,6 +292,12 @@ module.exports = (grunt) ->
 			);
 	)
 
+	globalConnectMiddleware = (connect, middlewares) ->
+		middlewares.unshift(
+			connect.compress filter: (req, res) ->
+				/json|text|javascript|dart|image\/svg\+xml|application\/x-font-ttf|application\/vnd\.ms-opentype|application\/vnd\.ms-fontobject/.test res.getHeader("Content-Type")
+		)
+
 	grunt.util.linefeed = "\n"
 	# Project configuration.
 	grunt.initConfig
@@ -304,24 +312,7 @@ module.exports = (grunt) ->
 		glyphiconsBanner: "/*!\n * GLYPHICONS Halflings for Twitter Bootstrap by GLYPHICONS.com | Licensed under http://www.apache.org/licenses/LICENSE-2.0\n */"
 		i18nGDocsID: "0AqLc8VEIumBwdDNud1M2Wi1tb0RUSXJxSGp4eXI0ZXc"
 		i18nGDocsSheet: 1
-		mochaUrls: grunt.file.expand({cwd: "src"}
-						"test.js"
-						"**/test.js"
-					).map( ( src ) ->
-						src = src.replace( /\\/g , "/" ) #" This is to escape a Sublime text regex issue in the replace
-						src = src.replace( "polyfills/" , "" )
-						src = src.replace( "plugins/" , "" )
-						src = src.replace( "other/" , "" )
-						src = src.replace( ".js" , "" )
-						src
-					).sort( ( a, b) ->
-						if a is "test"
-								-1
-							else if a > b
-								1
-							else
-								-1
-					)
+
 		deployBranch: "v4.0-dist"
 
 		# Task configuration.
@@ -382,6 +373,13 @@ module.exports = (grunt) ->
 				]
 				dest: "dist/unmin/js/ie8-wet-boew2.js"
 
+			test:
+				src: [
+					"src/test.js"
+					"src/**/test.js"
+				]
+				dest: "dist/unmin/test/tests.js"
+
 			i18n:
 				options:
 					process: ( src, filepath ) ->
@@ -415,20 +413,12 @@ module.exports = (grunt) ->
 				dest: "dist/unmin/js/i18n"
 				expand: true
 
-			css_addBanners:
+		usebanner:
+			css:
 				options:
 					banner: "@charset \"utf-8\";\n<%= banner %>"
 				files:
-					"dist/unmin/css/polyfills/datalist.css": "dist/unmin/css/polyfills/datalist.css"
-					"dist/unmin/css/polyfills/datepicker.css": "dist/unmin/css/polyfills/datepicker.css"
-					"dist/unmin/css/polyfills/details.css": "dist/unmin/css/polyfills/details.css"
-					"dist/unmin/css/polyfills/meter.css": "dist/unmin/css/polyfills/meter.css"
-					"dist/unmin/css/polyfills/progress.css": "dist/unmin/css/polyfills/progress.css"
-					"dist/unmin/css/polyfills/slider.css": "dist/unmin/css/polyfills/slider.css"
-					"dist/unmin/css/noscript.css": "dist/unmin/css/noscript.css"
-					"dist/unmin/css/theme.css": "dist/unmin/css/theme.css"
-					"dist/unmin/css/wet-boew.css": "dist/unmin/css/wet-boew.css"
-					"dist/unmin/css/ie8-wet-boew.css": "dist/unmin/css/ie8-wet-boew.css"
+					src: "dist/unmin/css/*.*"
 
 		# Builds the demos
 		assemble:
@@ -641,32 +631,19 @@ module.exports = (grunt) ->
 						"opera 12.1"
 					]
 				files: [
-					cwd: "dist/unmin/css"
-					src: [
-						"**/*.css"
-						"!**/polyfills/**/*.css"
-						"!**/*.min.css"
-					]
-					dest: "dist/unmin/css"
-					expand: true
-					flatten: true
-				,
 					cwd: "dist/unmin/css/polyfills"
 					src: [
 						"**/*.css"
-						"!**/*.min.css"
 					]
 					dest: "dist/unmin/css/polyfills/"
 					expand: true
 				,
-					cwd: "dist/unmin/demos"
-					src: "**/*.css"
-					dest: "dist/unmin/demos/"
-					expand: true
-				,
-					cwd: "dist/unmin/docs"
-					src: "**/*.css"
-					dest: "dist/unmin/docs/"
+					cwd: "dist/unmin/"
+					src: [
+						"demos/**/*.css"
+						"docs/**/*.css"
+					]
+					dest: "dist/unmin/"
 					expand: true
 				]
 
@@ -686,36 +663,7 @@ module.exports = (grunt) ->
 
 		csslint:
 			options:
-				"adjoining-classes": false
-				"box-model": false
-				"box-sizing": false
-				"compatible-vendor-prefixes": false
-				"duplicate-background-images": false
-				"duplicate-properties": false
-				# Can be turned off after https://github.com/dimsemenov/Magnific-Popup/pull/303 lands
-				"empty-rules": false
-				"fallback-colors": false
-				"floats": false
-				"font-sizes": false
-				"gradients": false
-				"headings": false
-				"ids": false
-				"important": false
-				# Need due to use of "\9" hacks for oldIE
-				"known-properties": false
-				"outline-none": false
-				"overqualified-elements": false
-				"qualified-headings": false
-				"regex-selectors": false
-				"selector-max-approaching": false
-				# Some Bootstrap mixins end up listing all the longhand properties
-				"shorthand": false
-				"text-indent": false
-				"unique-headings": false
-				"universal-selector": false
-				"unqualified-attributes": false
-				# Zeros are output by some of the Bootstrap mixins, but shouldn't be used in our code
-				"zero-units": false
+				csslintrc: ".csslintrc"
 
 			unmin:
 				options:
@@ -724,7 +672,7 @@ module.exports = (grunt) ->
 						id: "csslint-xml"
 						dest: "csslint-unmin.log"
 					]
-				src: "dist/unmin/css/*.css"
+				src: "dist/unmin/css/**/*.css"
 
 			demos:
 				options:
@@ -936,7 +884,7 @@ module.exports = (grunt) ->
 					"!dist/**/ajax/*.html"
 				]
 
-		ie8csscleaning:
+		cssmin_ie8_clean:
 			min:
 				expand: true
 				cwd: "dist/css"
@@ -977,6 +925,7 @@ module.exports = (grunt) ->
 					"elem_details"
 					"elem_progress_meter"
 					"mathml"
+					"cors"
 				]
 				parseFiles: false
 				matchCommunityTests: false
@@ -991,36 +940,13 @@ module.exports = (grunt) ->
 
 			test:
 				files: [
-					cwd: "src/plugins"
+					cwd: "src"
 					src: [
-						"**/test.js"
 						"**/test/*.*"
 					]
 					dest: "dist/unmin/test"
-					expand: true
-				,
-					cwd: "src/polyfills"
-					src: [
-						"**/test.js"
-						"**/test/*.*"
-					]
-					dest: "dist/unmin/test"
-					expand: true
-				,
-					cwd: "src/other"
-					src: [
-						"**/test.js"
-						"**/test/*.*"
-					]
-					dest: "dist/unmin/test"
-					expand: true
-				,
-					cwd: "src/"
-					src: [
-						"**/test.js"
-						"**/test/*.*"
-					]
-					dest: "dist/unmin/test"
+					rename: (dest, src) ->
+						dest + src.replace /plugins|polyfills|others/, ""
 					expand: true
 				,
 					cwd: "node_modules"
@@ -1179,46 +1105,32 @@ module.exports = (grunt) ->
 			dist: ["dist", "src/base/partials/*sprites*"]
 
 		watch:
-			lib_test:
-				files: "<%= jshint.lib_test.src %>"
-				tasks: "jshint:lib_test"
-
-			source:
+			options:
+				livereload: true
+			js:
+				files: "<%= jshint.all.src %>"
+				tasks: "js"
+			css:
 				files: [
-					"src/**/*.*"
-					"!src/**/*sprites*"
+					"src/**/*.scss"
+					"site/**/*.scss"
+					"theme/**/*.scss"
 				]
-				tasks: "dist"
-				options:
-					interval: 5007
-					livereload: true
+				tasks: "css"
 
 			demos:
-				files: [
-					"<%= assemble.demos.src %>"
-				]
-				tasks: [
-					"pages:demos"
-				]
-				options:
-					interval: 5007
-					livereload: true
+				files: "src/**/*.hbs"
+				tasks: "pages:demos"
 
 			docs:
-				files: [
-					"<%= assemble.docs.src %>"
-				]
-				tasks: [
-					"pages:docs"
-				]
-				options:
-					livereload: true
+				files: "site/pages/docs/**/*.hbs"
+				tasks: "pages:docs"
 
 		jshint:
 			options:
 				jshintrc: ".jshintrc"
 
-			lib_test:
+			all:
 				src: [
 					"src/**/*.js"
 					"theme/**/*.js"
@@ -1231,7 +1143,7 @@ module.exports = (grunt) ->
 					config: ".jscsrc"
 
 				src: [
-					"<%= jshint.lib_test.src %>"
+					"<%= jshint.all.src %>"
 				]
 
 		connect:
@@ -1242,10 +1154,7 @@ module.exports = (grunt) ->
 				options:
 					base: "dist"
 					middleware: (connect, options, middlewares) ->
-						middlewares.unshift(connect.compress(
-							filter: (req, res) ->
-								/json|text|javascript|dart|image\/svg\+xml|application\/x-font-ttf|application\/vnd\.ms-opentype|application\/vnd\.ms-fontobject/.test(res.getHeader('Content-Type'))
-						))
+						globalConnectMiddleware connect, middlewares
 
 						middlewares.unshift (req, res, next) ->
 							req.url = req.url.replace( "/v4.0-ci/", "/" )
@@ -1268,6 +1177,9 @@ module.exports = (grunt) ->
 			test:
 				options:
 					base: "."
+					middleware: (connect, options, middlewares) ->
+						globalConnectMiddleware connect, middlewares
+						middlewares
 
 		i18n_csv:
 			options:
@@ -1289,11 +1201,22 @@ module.exports = (grunt) ->
 					urls: ["http://localhost:8000/dist/unmin/test/test.html?txthl=just%20some%7Ctest"]
 
 		"saucelabs-mocha":
-			all:
+			options:
+				urls: "<%= mocha.all.options.urls %>"
+				throttled: 3
+				browsers: grunt.file.readJSON "browsers.json"
+				tunnelArgs: [
+					"-D"
+					"ajax.googleapis.com"
+				]
+				sauceConfig:
+					"video-upload-on-pass": false
+					"single-window": true
+					"record-screenshots": false
+					"capture-html": true
+				maxRetries: 3
+			travis:
 				options:
-					urls: "<%= mocha.all.options.urls %>"
-					throttled: 3
-					browsers: grunt.file.readJSON "browsers.json"
 					testname: process.env.TRAVIS_COMMIT_MSG
 					build: process.env.TRAVIS_BUILD_NUMBER
 					tags: [
@@ -1301,12 +1224,10 @@ module.exports = (grunt) ->
 						process.env.TRAVIS_BRANCH
 						process.env.TRAVIS_COMMIT
 					]
-					sauceConfig:
-						"video-upload-on-pass": false
-						"single-window": true
-						"record-screenshots": false
-						"capture-html": true
-					maxRetries: 3
+			local:
+				options:
+					testname: "Local Test - <%= grunt.template.today('yyyy-mm-dd hh:MM') %>"
+
 
 		"gh-pages":
 			options:
@@ -1352,6 +1273,7 @@ module.exports = (grunt) ->
 	# These plugins provide necessary tasks.
 	@loadNpmTasks "assemble"
 	@loadNpmTasks "grunt-autoprefixer"
+	@loadNpmTasks "grunt-banner"
 	@loadNpmTasks "grunt-bootlint"
 	@loadNpmTasks "grunt-check-dependencies"
 	@loadNpmTasks "grunt-contrib-clean"
@@ -1365,6 +1287,7 @@ module.exports = (grunt) ->
 	@loadNpmTasks "grunt-contrib-jshint"
 	@loadNpmTasks "grunt-contrib-uglify"
 	@loadNpmTasks "grunt-contrib-watch"
+	@loadNpmTasks "grunt-cssmin-ie8-clean"
 	@loadNpmTasks "grunt-gh-pages"
 	@loadNpmTasks "grunt-html"
 	@loadNpmTasks "grunt-i18n-csv"

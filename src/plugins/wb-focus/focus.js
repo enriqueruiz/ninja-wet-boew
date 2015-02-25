@@ -8,16 +8,45 @@
 "use strict";
 
 var $document = wb.doc,
-	hash = wb.pageUrlParts.hash,
+	$window = wb.win,
 	clickEvents = "click vclick",
 	setFocusEvent = "setfocus.wb",
 	linkSelector = "a[href]",
-	$linkTarget;
+	$linkTarget,
+
+	/**
+	 * @method processHash
+	 */
+	processHash = function() {
+		var hash = wb.pageUrlParts.hash;
+
+		if ( hash && ( $linkTarget = $( "#" + wb.jqEscape( hash.substring( 1 ) ) ) ).length !== 0 ) {
+			$linkTarget.trigger( setFocusEvent );
+		}
+	};
 
 // Bind the setfocus event
 $document.on( setFocusEvent, function( event ) {
 	if ( event.namespace === "wb" ) {
-		var $elm = $( event.target );
+		var $elm = $( event.target ),
+			$closedParents = $elm.not( "summary" ).parents( "details, [role='tabpanel']" ),
+			$closedPanels, $closedPanel, len, i;
+
+		if ( $closedParents.length !== 0 ) {
+
+			// Open any closed ancestor details elements
+			$closedParents.not( "[open]" ).children( "summary" ).trigger( "click" );
+
+			// Open any closed tabpanels
+			$closedPanels = $closedParents.filter( "[aria-hidden='true']" );
+			len = $closedPanels.length;
+			for ( i = 0; i !== len; i += 1 ) {
+				$closedPanel = $closedPanels.eq( i );
+				$closedPanel.closest( ".wb-tabs" )
+					.find( "#" + $closedPanel.attr( "aria-labelledby" ) )
+						.trigger( "click" );
+			}
+		}
 
 		// Set the tabindex to -1 (as needed) to ensure the element is focusable
 		$elm
@@ -42,9 +71,15 @@ $document.on( setFocusEvent, function( event ) {
 
 // Set focus to the target of a deep link from a different page
 // (helps browsers that can't set the focus on their own)
-if ( hash && ( $linkTarget = $( hash ) ).length !== 0 ) {
-	$linkTarget.trigger( setFocusEvent );
-}
+$document.on( "wb-ready.wb", processHash );
+
+// Handle any changes to the URL hash after the page has loaded
+$window.on( "hashchange", function() {
+	wb.pageUrlParts.hash = window.location.hash;
+	if ( !wb.ignoreHashChange ) {
+		processHash();
+	}
+});
 
 // Helper for browsers that can't change keyboard and/or event focus on a same page link click
 $document.on( clickEvents, linkSelector, function( event ) {
@@ -52,8 +87,8 @@ $document.on( clickEvents, linkSelector, function( event ) {
 
 	// Same page links only
 	if ( testHref.charAt( 0 ) === "#" && !event.isDefaultPrevented() &&
-		( $linkTarget = $( testHref ) ).length !== 0 ) {
-
+		( $linkTarget = $( "#" + wb.jqEscape( testHref.substring( 1 ) ) ) ).length !== 0 ) {
+		wb.ignoreHashChange = true;
 		$linkTarget.trigger( setFocusEvent );
 	}
 });

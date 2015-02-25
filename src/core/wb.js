@@ -48,6 +48,12 @@ var getUrlParts = function( url ) {
 	},
 
 	/**
+	 * @variable seed
+	 * @return a unique number for auto-generating ids
+	 */
+	seed = 0,
+
+	/**
 	 * @variable $src
 	 * @return {jQuery Element} of wb script element
 	 */
@@ -111,7 +117,14 @@ var getUrlParts = function( url ) {
 	 * @return {boolean} of state of disabled flag
 	 */
 	disabled = (function() {
-		var disabled = currentpage.params.wbdisable || ( !localStorage ? "false" : localStorage.getItem( "wbdisable" ) );
+		var disabledSaved = "false",
+			disabled;
+
+		try {
+			disabledSaved = localStorage.getItem( "wbdisable" ) || disabledSaved;
+		} catch ( e ) {}
+
+		disabled = currentpage.params.wbdisable || disabledSaved;
 		return ( typeof disabled === "string" ) ? ( disabled.toLowerCase() === "true" ) : Boolean( disabled );
 	}()),
 
@@ -134,6 +147,7 @@ var getUrlParts = function( url ) {
 		isDisabled: disabled,
 		isStarted: false,
 		isReady: false,
+		ignoreHashChange: false,
 		initQueue: 0,
 
 		getPath: function( property ) {
@@ -144,7 +158,11 @@ var getUrlParts = function( url ) {
 			return this.mode;
 		},
 
-		init: function( event, componentName, selector ) {
+		getId: function() {
+			return "wb-auto-" + ( seed += 1 );
+		},
+
+		init: function( event, componentName, selector, autoId ) {
 			var	eventTarget = event.target,
 				isEvent = !!eventTarget,
 				node = isEvent ? eventTarget : event,
@@ -160,6 +178,10 @@ var getUrlParts = function( url ) {
 				this.remove( selector );
 				if ( !isDocumentNode ) {
 					node.className += " " + initedClass;
+
+					if ( autoId && !node.id ) {
+						node.id = wb.getId();
+					}
 				}
 
 				return node;

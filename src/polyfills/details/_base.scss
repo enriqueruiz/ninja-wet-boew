@@ -9,9 +9,18 @@ summary {
 	visibility: visible !important;
 }
 
+%details-nested-in-hidden-details {
+	details {
+		summary {
+			display: none !important;
+		}
+	}
+}
+
 details {
 	// Prevent FOUC
 	&:not([open]) {
+		@extend %details-nested-in-hidden-details;
 		visibility: hidden;
 
 		> {
@@ -19,6 +28,26 @@ details {
 			details,
 			* {
 				display: none;
+			}
+		}
+	}
+
+	&.alert {
+		&:not([open]) {
+			visibility: visible;
+		}
+	}
+
+	.out {
+		@extend %details-nested-in-hidden-details;
+	}
+}
+
+.tabpanels {
+	> {
+		details {
+			&:not([open]) {
+				visibility: visible;
 			}
 		}
 	}

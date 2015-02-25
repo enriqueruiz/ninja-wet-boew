@@ -49,6 +49,7 @@ var componentName = "wb-menu",
 			menuCount += 1;
 
 			// Lets test to see if we have any menus to fetch
+			// This is required for backwards compatibility. In previous versions, the menu was not integrated witht he data ajax plugin.
 			ajaxFetch = $elm.data( "ajax-fetch" );
 			if ( ajaxFetch ) {
 				$elm.trigger({
@@ -58,7 +59,12 @@ var componentName = "wb-menu",
 					}
 				});
 			} else {
-				onAjaxLoaded( $elm, $elm );
+
+				//Enhance menus that don't rely on the data-ajax plugin
+				ajaxFetch = $elm.data( "ajax-replace" ) || $elm.data( "ajax-append" ) || $elm.data( "ajax-prepend" );
+				if ( !ajaxFetch ) {
+					onAjaxLoaded( $elm, $elm );
+				}
 			}
 		}
 	},
@@ -106,7 +112,7 @@ var componentName = "wb-menu",
 	createCollapsibleSection = function( section, sectionIndex, sectionsLength, $items, itemsLength ) {
 
 		// Use details/summary for the collapsible mechanism
-		var k, $elm, elm, $item, $subItems,
+		var k, $elm, elm, $item, $subItems, subItemsLength,
 			$section = $( section ),
 			posinset = "' aria-posinset='",
 			menuitem = "role='menuitem' aria-setsize='",
@@ -121,7 +127,10 @@ var componentName = "wb-menu",
 			$item = $items.eq( k );
 			$elm = $item.find( menuItemSelector );
 			elm = $elm[ 0 ];
-			if ( elm.nodeName.toLowerCase() === "a" ) {
+			$subItems = $elm.parent().find( "> ul > li" );
+			subItemsLength = $subItems.length;
+
+			if ( elm && subItemsLength === 0 && elm.nodeName.toLowerCase() === "a" ) {
 				sectionHtml += "<li>" + $item[ 0 ].innerHTML.replace(
 						/(<a\s)/,
 						"$1 " + menuitem + itemsLength +
@@ -129,7 +138,6 @@ var componentName = "wb-menu",
 							"' tabindex='-1' "
 					) + "</li>";
 			} else {
-				$subItems = $elm.parent().find( "> ul > li" );
 				sectionHtml += createCollapsibleSection( elm, k, itemsLength, $subItems, $subItems.length );
 			}
 		}

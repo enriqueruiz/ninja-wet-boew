@@ -20,7 +20,6 @@ var componentName = "wb-lbx",
 	dependenciesLoadedEvent = "deps-loaded" + selector,
 	extendedGlobal = false,
 	$document = wb.doc,
-	idCount = 0,
 	callbacks, i18n, i18nText,
 
 	/**
@@ -32,18 +31,11 @@ var componentName = "wb-lbx",
 		// Start initialization
 		// returns DOM object = proceed with init
 		// returns undefined = do not proceed with init (e.g., already initialized)
-		var elm = wb.init( event, componentName, selector ),
+		var elm = wb.init( event, componentName, selector, true ),
 			elmId;
 
 		if ( elm ) {
 			elmId = elm.id;
-
-			// Ensure there is a unique id on the element
-			if ( !elmId ) {
-				elmId = componentName + "-id-" + idCount;
-				idCount += 1;
-				elm.id = elmId;
-			}
 
 			// Ensure the dependencies are loaded first
 			$document.one( dependenciesLoadedEvent, function() {
@@ -87,6 +79,15 @@ var componentName = "wb-lbx",
 
 					if ( elm.className.indexOf( "lbx-modal" ) !== -1 ) {
 						settings.modal = true;
+					}
+					if ( elm.className.indexOf( "lbx-ajax" ) !== -1 ) {
+						settings.type = "ajax";
+					}
+					if ( elm.className.indexOf( "lbx-image" ) !== -1 ) {
+						settings.type = "image";
+					}
+					if ( elm.className.indexOf( "lbx-inline" ) !== -1 ) {
+						settings.type = "inline";
 					}
 
 					// Extend the settings with window[ "wb-lbx" ] then data-wb-lbx
@@ -155,7 +156,10 @@ var componentName = "wb-lbx",
 						$content.attr( "role", "document" );
 					}
 
-					$wrap.append( "<span tabindex='0' class='lbx-end wb-inv'></span>" );
+					$wrap.append( "<span tabindex='0' class='lbx-end wb-inv'></span>" )
+                        .find( ".activate-open" )
+                        .trigger( "wb-activate" );
+
 				},
 				change: function() {
 					var $item = this.currItem,
@@ -201,6 +205,26 @@ var componentName = "wb-lbx",
 							.first()
 							.attr( "id", "lbx-title" );
 					}
+
+					$content.attr( "aria-labelledby", "lbx-title" );
+				},
+				parseAjax: function( mfpResponse ) {
+					var urlHash = this.currItem.src.split( "#" )[ 1 ],
+						$response = $( "<div>" + mfpResponse.data + "</div>" );
+
+					// Provide the ability to filter the AJAX response HTML
+					// by the URL hash
+					// TODO: Should be dealt with upstream by Magnific Popup
+					if ( urlHash ) {
+						$response = $response.find( "#" + wb.jqEscape( urlHash ) );
+					}
+
+					$response
+						.find( ".modal-title, h1" )
+						.first()
+						.attr( "id", "lbx-title" );
+
+					mfpResponse.data = $response;
 				}
 			};
 		}
@@ -282,16 +306,15 @@ $document.on( "focusin", "body", function( event ) {
 $document.on( "click vclick", ".mfp-wrap a[href^='#']", function( event ) {
 	var which = event.which,
 		eventTarget = event.target,
-		href, $lightbox, linkTarget;
+		$lightbox, linkTarget;
 
 	// Ignore middle/right mouse buttons
 	if ( !which || which === 1 ) {
 		$lightbox = $( eventTarget ).closest( ".mfp-wrap" );
-		href = eventTarget.getAttribute( "href" );
-		linkTarget = document.getElementById( href.substring( 1 ) );
+		linkTarget = document.getElementById( eventTarget.getAttribute( "href" ).substring( 1 ) );
 
 		// Ignore same page links to within the overlay and modal popups
-		if ( href.length > 1 && !$.contains( $lightbox[ 0 ], linkTarget ) ) {
+		if ( linkTarget && !$.contains( $lightbox[ 0 ], linkTarget ) ) {
 			if ( $lightbox.find( ".popup-modal-dismiss" ).length === 0 ) {
 
 				// Stop propagation of the click event

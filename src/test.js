@@ -2,7 +2,7 @@
 
 // Test harness to run the full suite
 mocha.setup( "bdd" );
-wb.doc.on( "ready", function() {
+wb.doc.on( "wb-ready.wb", function() {
 
 	var runner = mocha.run(),
 		failedTests = [];
@@ -29,7 +29,7 @@ wb.doc.on( "ready", function() {
 			name: test.title,
 			result: false,
 			message: err.message,
-			stack: err.message + "\n" + err.stack,
+			stack: err.message + "\n" + err.stack || "",
 			titles: flattenTitles( test )
 		});
 	}

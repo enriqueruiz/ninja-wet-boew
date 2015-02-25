@@ -45,12 +45,13 @@ var componentName = "wb-disable",
 
 			try {
 				if ( wb.isDisabled || ( wb.ie && wb.ielt7 ) ) {
-					$html.addClass( "no-js wb-disable" );
-					if ( localStorage ) {
+					$html.addClass( "wb-disable" );
+
+					try {
 
 						// Store preference for WET plugins and polyfills to be disabled in localStorage
 						localStorage.setItem( "wbdisable", "true");
-					}
+					} catch (e) {}
 
 					// Append the Standard version link
 					li.innerHTML = "<a class='wb-sl' href='" + nQuery + "wbdisable=false'>" + i18n( "wb-enable" ) + "</a>";
@@ -58,10 +59,14 @@ var componentName = "wb-disable",
 					// Add link to re-enable WET plugins and polyfills
 					elm.appendChild( li );
 					return true;
-				} else if ( localStorage ) {
+				} else {
+					$html.addClass( "wb-enable" );
 
-					// Store preference for WET plugins and polyfills to be enabled in localStorage
-					localStorage.setItem( "wbdisable", "false" );
+					if ( localStorage ) {
+
+						// Store preference for WET plugins and polyfills to be enabled in localStorage
+						localStorage.setItem( "wbdisable", "false" );
+					}
 				}
 			} catch ( error ) {
 			}
