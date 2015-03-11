@@ -3,13 +3,17 @@
  * wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html
  */
 /*jshint unused: false*/
-(function( $, wb ) {
+( function( $, wb ) {
 "use strict";
 
-wb.doc.on( "click vclick", ".modal-close", function( event ) {
-	$( event.currentTarget )
-			.closest( ".wb-overlay" )
-				.trigger( "close.wb-overlay" );
-});
+wb.doc.on( "click vclick", "#overlay-open-btn", function( event ) {
+	if ( event.stopPropagation ) {
+		event.stopImmediatePropagation();
+	} else {
+		event.cancelBubble = true;
+	}
 
-})( jQuery, wb );
+	$( "#" + $( "#overlay-select" ).val() ).trigger( "open.wb-overlay" );
+} );
+
+} )( jQuery, wb );

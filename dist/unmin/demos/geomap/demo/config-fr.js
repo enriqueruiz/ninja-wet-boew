@@ -17,46 +17,61 @@
 /*jshint unused:false*/
 var wet_boew_geomap = {
 	// OPTIONNEL: Géomap va fournir une carte de base par défaut si aucune carte de base n"est spécifié ici.
-	/*
-	basemap : {
-		title: "CBMT",
+		/*basemap: {
+		title: "WMS-Toporama",
 		type: "wms",
-		url: "http://geogratis.gc.ca/maps/CBMT",
-		layers: "CBMT",
-		format: "image/png",
+		url: "http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en",
 		version: "1.1.1",
-		options: {
-			singleTile: false,
-			ratio: 1.0,
-			projection: "EPSG:3978",
-			fractionalZoom: true
-		},
+		format: "image/jpeg",
+		layers: "WMS-Toporama",
 		mapOptions: {
-			maxExtent: "-3000000.0, -800000.0, 4000000.0, 3900000.0",
+			maxExtent: "-2650000.0, -900000.0, 3600000.0, 4630000.0",
+			restrictedExtent: "-2750000.0, -1000000.0, 3700000.0, 4730000.0",
 			maxResolution: "auto",
 			projection: "EPSG:3978",
-			restrictedExtent: "-3000000.0, -800000.0, 4000000.0, 3900000.0",
 			units: "m",
 			displayProjection: "EPSG:4269",
-			numZoomLevels: 12
+			aspectRatio: 0.8
 		}
-	},
-	*/
-	/*
-	basemap : {
-		title: "WMS Demo",
-		type: "wms",
-		url: "http://vmap0.tiles.osgeo.org/wms/vmap0",
-		layers: "basic"
-	},
-	*/
+	},*/
 	overlays: [
 		{
-			title: "KML Demo FR",
+			title: "WMS Demo",
+			caption: " Ceci est un exemple de service WMS chargé à l’aide de Géomap.",
+			type: "wms",
+			url: "http://geo.weather.gc.ca/geomet/?Lang=F",
+			visible: false,
+			version: "1.1.1",
+			format: "image/png",
+			layers: "GDPS.ETA_PR",
+			transparent: true,
+			options: {
+				opacity: 0.5,
+				//legendGraphicUrl: "http://geo.weather.gc.ca/geomet/?Lang=E&LAYERS=GDPS.ETA_PR&VERSION=1.1.1&FORMAT=image%2Fpng&SERVICE=WMS&REQUEST=GetLegendGraphic&STYLE=PRECIPMM"
+				legendHTML: "<small>GeoMet Precipitation (mm)</small>" +
+						"<ul class='list-unstyled'>" +
+						"<li><span style='background-color:#800000;display:inline-block;height:20px;width:20px'/> <small>100.0</small></li>" +
+						"<li><span style='background-color:#FF0000;display:inline-block;height:20px;width:20px'/> <small>50.0</small></li>" +
+						"<li><span style='background-color:#FF4500;display:inline-block;height:20px;width:20px'/> <small>25.0</small></li>" +
+						"<li><span style='background-color:#FFA500;display:inline-block;height:20px;width:20px'/> <small>20.0</small></li>" +
+						"<li><span style='background-color:#FFD700;display:inline-block;height:20px;width:20px'/> <small>15.0</small></li>" +
+						"<li><span style='background-color:#E5E500;display:inline-block;height:20px;width:20px'/> <small>10.0</small></li>" +
+						"<li><span style='background-color:#7FFF00;display:inline-block;height:20px;width:20px'/> <small>7.5</small></li>" +
+						"<li><span style='background-color:#7FFFD4;display:inline-block;height:20px;width:20px'/> <small>5.0</small></li>" +
+						"<li><span style='background-color:#00FFFF;display:inline-block;height:20px;width:20px'/> <small>2.5</small></li>" +
+						"<li><span style='background-color:#87CEFA;display:inline-block;height:20px;width:20px'/> <small>1.0</small></li>" +
+						"<li><span style='background-color:#1E90FF;display:inline-block;height:20px;width:20px'/> <small>0.5</small></li>" +
+						"<li><span style='background-color:#0000CD;display:inline-block;height:20px;width:20px'/> <small>0.25</small></li>" +
+						"<li><span style='background-color:#000080;display:inline-block;height:20px;width:20px'/> <small>0.10</small></li>" +
+						"</ul>"
+			}
+		},
+		{
+			title: "KML Demo",
 			caption: "Ceci est un exemple de fichier KML chargé localement par Géocarte.",
 			type: "kml",
 			url: "demo/sample_fr.kml",
-			visible: true,
+			visible: false,
 			datatable: true,
 			tab: true,
 			popups: true,
@@ -66,7 +81,7 @@ var wet_boew_geomap = {
 			}
 		},
 		{
-			title: "ATOM Demo FR",
+			title: "ATOM Demo",
 			caption: "Ceci est un exemple de fil ATOM chargé localement par Géocarte.",
 			type: "atom",
 			url: "demo/sample_fr.atom",
@@ -79,7 +94,7 @@ var wet_boew_geomap = {
 			tab: true
 		},
 		{
-			title: "GeoRSS Demo FR",
+			title: "GeoRSS Demo",
 			caption: "Ceci est un exemple de fil GeoRSS chargé localement par Géocarte.",
 			type: "georss",
 			url: "demo/sample_fr.rss",
@@ -93,7 +108,7 @@ var wet_boew_geomap = {
 			tab: true
 		},
 		{
-			title: "JSON (GeoGratis) FR",
+			title: "JSON (GeoGratis)",
 			caption: "Ceci est un exemple d'un jeu de données JSON chargé à partir d'un site externe, dans ce cas-ci Géogratis.",
 			type: "json",
 			url: "http://geogratis.gc.ca/api/fr/nrcan-rncan/ess-sst",
@@ -113,7 +128,7 @@ var wet_boew_geomap = {
 			}
 		},
 		{
-			title: "GeoJSON (CartoDB) FR",
+			title: "GeoJSON (CartoDB)",
 			caption: "Ceci est un exemple d'un jeu de données JSON chargé à partir d'un site externe, dans ce cas-ci les caméras de circulation de la ville d'Ottawa à partir du site Carto DB.",
 			type: "geojson",
 			url: "http://stephenott.cartodb.com/api/v2/sql",
@@ -127,7 +142,7 @@ var wet_boew_geomap = {
 				latitude: "Longitude",
 				updated_at: "Dernière mise à jour"
 			},
-			visible: true,
+			visible: false,
 			zoom: true,
 			datatable: true,
 			tab: true,

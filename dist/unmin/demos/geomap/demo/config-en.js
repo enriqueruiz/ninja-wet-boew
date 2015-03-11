@@ -18,54 +18,61 @@
 /*jshint unused:false*/
 var wet_boew_geomap = {
 	// OPTIONAL: note that Geomap will provide a default basemap if not specified here.
-	/*
-	basemap: {
-		title: "CBMT",
+	/*basemap: {
+		title: "WMS-Toporama",
 		type: "wms",
-		url: "http://geogratis.gc.ca/maps/CBMT",
-		layers: "CBMT",
-		format: "image/png",
+		url: "http://wms.ess-ws.nrcan.gc.ca/wms/toporama_en",
 		version: "1.1.1",
-		options: {
-			singleTile: false,
-			ratio: 1.0,
-			projection: "EPSG:3978",
-			fractionalZoom: true
-		},
+		format: "image/jpeg",
+		layers: "WMS-Toporama",
 		mapOptions: {
-			maxExtent: "-3000000.0, -800000.0, 4000000.0, 3900000.0",
+			maxExtent: "-2650000.0, -900000.0, 3600000.0, 4630000.0",
+			restrictedExtent: "-2750000.0, -1000000.0, 3700000.0, 4730000.0",
 			maxResolution: "auto",
 			projection: "EPSG:3978",
-			restrictedExtent: "-3000000.0, -800000.0, 4000000.0, 3900000.0",
 			units: "m",
 			displayProjection: "EPSG:4269",
-			numZoomLevels: 12
-		}
-	},
-	*/
-
-	/*basemap : {
-		title: "WMS Demo",
-		type: "wms",
-		url: "http://vmap0.tiles.osgeo.org/wms/vmap0",
-		layers: "basic",
-		mapOptions: {
-			maxExtent: "-180, -90, 180, 90",
-			maxResolution: "auto",
-			projection: "EPSG:4326",
-			restrictedExtent: "-180, -90, 180, 90",
-			units: "m",
-			displayProjection: "EPSG:4326",
-			tileManager: null
+			aspectRatio: 0.8
 		}
 	},*/
 	overlays: [
 		{
-			title: "KML Demo EN",
+			title: "WMS Demo",
+			caption: "This is a sample WMS service loaded by Geomap.",
+			type: "wms",
+			url: "http://geo.weather.gc.ca/geomet/?Lang=E",
+			visible: false,
+			version: "1.1.1",
+			format: "image/png",
+			layers: "GDPS.ETA_PR",
+			transparent: true,
+			options: {
+				opacity: 0.5,
+				//legendGraphicUrl: "http://geo.weather.gc.ca/geomet/?Lang=E&LAYERS=GDPS.ETA_PR&VERSION=1.1.1&FORMAT=image%2Fpng&SERVICE=WMS&REQUEST=GetLegendGraphic&STYLE=PRECIPMM"
+				legendHTML: "<small>GeoMet Precipitation (mm)</small>" +
+						"<ul class='list-unstyled'>" +
+						"<li><span style='background-color:#800000;display:inline-block;height:20px;width:20px'/> <small>100.0</small></li>" +
+						"<li><span style='background-color:#FF0000;display:inline-block;height:20px;width:20px'/> <small>50.0</small></li>" +
+						"<li><span style='background-color:#FF4500;display:inline-block;height:20px;width:20px'/> <small>25.0</small></li>" +
+						"<li><span style='background-color:#FFA500;display:inline-block;height:20px;width:20px'/> <small>20.0</small></li>" +
+						"<li><span style='background-color:#FFD700;display:inline-block;height:20px;width:20px'/> <small>15.0</small></li>" +
+						"<li><span style='background-color:#E5E500;display:inline-block;height:20px;width:20px'/> <small>10.0</small></li>" +
+						"<li><span style='background-color:#7FFF00;display:inline-block;height:20px;width:20px'/> <small>7.5</small></li>" +
+						"<li><span style='background-color:#7FFFD4;display:inline-block;height:20px;width:20px'/> <small>5.0</small></li>" +
+						"<li><span style='background-color:#00FFFF;display:inline-block;height:20px;width:20px'/> <small>2.5</small></li>" +
+						"<li><span style='background-color:#87CEFA;display:inline-block;height:20px;width:20px'/> <small>1.0</small></li>" +
+						"<li><span style='background-color:#1E90FF;display:inline-block;height:20px;width:20px'/> <small>0.5</small></li>" +
+						"<li><span style='background-color:#0000CD;display:inline-block;height:20px;width:20px'/> <small>0.25</small></li>" +
+						"<li><span style='background-color:#000080;display:inline-block;height:20px;width:20px'/> <small>0.10</small></li>" +
+						"</ul>"
+			}
+		},
+		{
+			title: "KML Demo",
 			caption: "This is a sample KML file loaded locally by Geomap.",
 			type: "kml",
 			url: "demo/sample.kml",
-			visible: true,
+			visible: false,
 			datatable: false,
 			tab: true,
 			popups: true,
@@ -75,7 +82,7 @@ var wet_boew_geomap = {
 			}
 		},
 		{
-			title: "ATOM Demo EN",
+			title: "ATOM Demo",
 			caption: "This is a sample ATOM feed loaded locally by Geomap.",
 			type: "atom",
 			url: "demo/sample.atom",
@@ -84,10 +91,10 @@ var wet_boew_geomap = {
 				title: "Title",
 				summary: "About this dataset"
 			},
-			visible: true
+			visible: false
 		},
 		{
-			title: "GeoRSS Demo EN",
+			title: "GeoRSS Demo",
 			caption: "This is a sample GeoRSS feed loaded locally by Geomap.",
 			type: "georss",
 			url: "demo/sample.rss",
@@ -96,12 +103,12 @@ var wet_boew_geomap = {
 				description: "Description",
 				link: "More Info"
 			},
-			visible: true,
+			visible: false,
 			datatable: false,
 			tab: true
 		},
 		{
-			title: "JSON (GeoGratis) EN",
+			title: "JSON (GeoGratis)",
 			caption: "This is a sample dataset loaded from a remote JSON resource, in this case the GeoGratis API.",
 			type: "json",
 			url: "http://geogratis.gc.ca/api/en/nrcan-rncan/ess-sst",
@@ -109,7 +116,7 @@ var wet_boew_geomap = {
 				alt: "json",
 				q: "alluvial"
 			},
-			visible: true,
+			visible: false,
 			root: "products",
 			popups: true,
 			tab: true,
@@ -120,7 +127,7 @@ var wet_boew_geomap = {
 			}
 		},
 		{
-			title: "GeoJSON (CartoDB) EN",
+			title: "GeoJSON (CartoDB)",
 			caption: "This is a sample dataset loaded from a remote GeoJSON resource, in this case traffic cameras in the city of Ottawa from the CartoDB API.",
 			type: "geojson",
 			url: "http://stephenott.cartodb.com/api/v2/sql",
@@ -134,7 +141,7 @@ var wet_boew_geomap = {
 				latitude: "Longitude",
 				updated_at: "Last updated"
 			},
-			visible: true,
+			visible: false,
 			zoom: true,
 			datatable: true,
 			tab: true,

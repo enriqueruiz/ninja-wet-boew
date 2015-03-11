@@ -6,7 +6,8 @@
 	<head>
 		<meta charset="utf-8" />
 		<!-- Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
-		wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
+wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
+
 		<title>Exemples pratiques
 
 
@@ -15,6 +16,7 @@
 		<meta content="width=device-width, initial-scale=1" name="viewport" />
 		<!-- Meta data -->
 		<meta name="description" content="La Boîte à outils de l’expérience Web (BOEW) rassemble différents composants réutilisables et prêts-à-utiliser pour la conception et la mise à jour de sites Web innovateurs qui sont à la fois accessibles, conviviaux et interopérables. Tous ces composants réutilisables sont des logiciels libres mis à la disposition des ministères et des collectivités Web externes." />
+
 		<!-- Meta data-->
 		<!--[if gte IE 9 | !IE ]><!-->
 <link href="../assets/favicon.ico" rel="icon" type="image/x-icon" />
@@ -33,26 +35,27 @@
 
 	</head>
 	<body vocab="http://schema.org/" typeof="WebPage">
-		<ul id="wb-tphp">
-			<li class="wb-slc">
-				<a class="wb-sl" href="#wb-cont">Passer au contenu principal</a>
-			</li>
+		
+<ul id="wb-tphp">
+	<li class="wb-slc">
+		<a class="wb-sl" href="#wb-cont">Passer au contenu principal</a>
+	</li>
 
-			<li class="wb-slc visible-md visible-lg">
-				<a class="wb-sl" href="#wb-info">Passer aux informations sur le site</a>
-			</li>
+	<li class="wb-slc visible-sm visible-md visible-lg">
+		<a class="wb-sl" href="#wb-info">Passer à «&#160;À propos de ce site&#160;»</a>
+	</li>
 
 
-		</ul>
-		<header role="banner">
-			<div id="wb-bnr">
-				<div id="wb-bar">
-					<div class="container">
-						<div class="row">
+</ul>
+<header role="banner">
+	<div id="wb-bnr">
+		<div id="wb-bar">
+			<div class="container">
+				<div class="row">
 
-							<section id="wb-lng" class="visible-md visible-lg">
-								<h2>Sélection de la langue</h2>
-								<ul class="text-right">
+					<section id="wb-lng" class="visible-md visible-lg">
+						<h2>Sélection de la langue</h2>
+						<ul class="text-right">
 
 	<li class="curr">Français&#32;<span>(actuel)</span></li>
 
@@ -61,36 +64,36 @@
 
 </ul>
 
-							</section>
+					</section>
 
 
-							<section class="wb-mb-links col-xs-12 visible-sm visible-xs" id="wb-glb-mn">
-								<h2>Menu</h2>
-								<ul class="pnl-btn list-inline text-right">
-	<li><a href="#mb-pnl" title="Menu" aria-controls="mb-pnl" class="overlay-lnk btn btn-xs btn-default" role="button"><span class="glyphicon glyphicon-th-list"><span class="wb-inv">Menu</span></span></a></li>
+					<section class="wb-mb-links col-xs-12 visible-sm visible-xs" id="wb-glb-mn">
+						<h2>Recherche et menus</h2>
+						<ul class="pnl-btn list-inline text-right">
+	<li><a href="#mb-pnl" title="Recherche et menus" aria-controls="mb-pnl" class="overlay-lnk btn btn-sm btn-default" role="button"><span class="glyphicon glyphicon-search"><span class="glyphicon glyphicon-th-list"><span class="wb-inv">Recherche et menus</span></span></span></a></li>
 </ul>
 <div id="mb-pnl"></div>
 
-							</section>
+					</section>
 
-						</div>
-					</div>
 				</div>
+			</div>
+		</div>
 
-				<div class="container">
-					<div class="row">
+		<div class="container">
+			<div class="row">
 
-						<div id="wb-sttl" class="col-md-8">
-							<a href="../index-fr.html">
-	<object type="image/svg+xml" tabindex="-1" role="img" data="../assets/logo.svg" aria-label="Boîte à outils de l'expérience Web"></object>
+				<div id="wb-sttl" class="col-md-8">
+					<a href="../index-fr.html">
+	<object type="image/svg+xml" tabindex="-1" data="../assets/logo.svg"></object>
 	<span>Boîte à outils de l'expérience Web<span class="wb-inv">, </span><small>Projet à source ouverte collaboratif dirigé par le Gouvernement du Canada</small></span>
 </a>
 
-						</div>
+				</div>
 
-						<section id="wb-srch" class="col-md-4 visible-md visible-lg">
-							<h2>Recherche</h2>
-							<form action="https://google.ca/search" method="get" role="search" class="form-inline">
+				<section id="wb-srch" class="col-md-4 visible-md visible-lg">
+					<h2>Recherche</h2>
+					<form action="https://google.ca/search" method="get" role="search" class="form-inline">
 
 	<div class="form-group">
 		<label for="wb-srch-q">Recherchez le site Web</label>
@@ -102,33 +105,33 @@
 
 </form>
 
-						</section>
+				</section>
 
-					</div>
-				</div>
 			</div>
+		</div>
+	</div>
 
-			<nav role="navigation" id="wb-sm" data-ajax-fetch="../ajax/sitemenu-fr.html" data-trgt="mb-pnl" class="wb-menu visible-md visible-lg" typeof="SiteNavigationElement">
-				<div class="container nvbar">
-	<h2>Menu du site</h2>
-    <div class="row">
-        <ul class="list-inline menu">
+	<nav role="navigation" id="wb-sm" data-ajax-fetch="../ajax/sitemenu-fr.html" data-trgt="mb-pnl" class="wb-menu visible-md visible-lg" typeof="SiteNavigationElement">
+		<div class="container nvbar">
+	<h2>Menu des sujets</h2>
+	<div class="row">
+		<ul class="list-inline menu">
 
 			<li><a href="../index-fr.html">Projet de la BOEW</a></li>
-			<li><a href="http://wet-boew.github.io/wet-boew/docs/start-fr.html#implement">Mise en œuvre de la BOEW</a></li>
-			<li><a href="http://wet-boew.github.io/wet-boew/docs/start-fr.html">Contribuer à la BOEW</a></li>
+			<li><a href="../docs/start-fr.html#implement">Mise en œuvre de la BOEW</a></li>
+			<li><a href="../docs/start-fr.html">Contribuer à la BOEW</a></li>
 
-        </ul>
-    </div>
+		</ul>
+	</div>
 </div>
 
-			</nav>
+	</nav>
 
 
 	
-			<nav role="navigation" id="wb-bc" property="breadcrumb">
-				<h2>Vous êtes ici :</h2>
-				<div class="container">
+		<nav role="navigation" id="wb-bc" property="breadcrumb">
+			<h2>Vous êtes ici :</h2>
+			<div class="container">
 	<div class="row">
 		<ol class="breadcrumb">
 			<li>
@@ -141,33 +144,28 @@
 	</div>
 </div>
 
-			</nav>
+		</nav>
 	
 
-		</header>
+</header>
 
 
-		<main role="main" property="mainContentOfPage" class="container">
-			<h1 id="wb-cont" property="name">Exemples pratiques</h1>
-			
+	<main role="main" property="mainContentOfPage" class="container">
 
+		<h1 id="wb-cont" property="name">Exemples pratiques</h1>
 
-
-
-
-<section class="alert alert-info">
+		<section class="alert alert-warning">
 	<h2 class="h3">Vous cherchez la BOEW v3.1?</h2>
-	<p>La BOEW v4.0 est maintenant la version courrante. La <a href="http://wet-boew.github.io/v3.1-ci/demos/index-fr.html">version de la page actuelle pour la BOEW v3.1</a> a été déplacée.</p>
+	<p>À partir du 23 septembre 2014, la version 3.1 de la Boîte à outils de l'expérience Web n'est plus supportée. Le code source et la documentation ont été déplacés vers le dépôt <a href="https://github.com/wet-boew/wet-boew-legacy">wet-boew-legacy</a>.</p>
 </section>
 
 
+		
 
 
-			
 
-
-			
-<table id="components" class="wb-tables table table-striped table-hover" data-wb-tables='{"aoColumnDefs": [ { "bVisible": false, "aTargets": [ 3 ] } ], "aLengthMenu": [[10, 25, -1], [10, 25, "Toutes les"]], "iDisplayLength": -1 }'>
+		
+<table id="components" class="wb-tables table table-striped table-hover" data-wb-tables='{"columnDefs": [ { "visible": false, "targets": [ 3 ] } ], "lengthMenu": [[10, 25, -1], [10, 25, "Toutes les"]], "pageLength": -1 }'>
 	<thead>
 		<tr>
 			<th>Nom</th>
@@ -181,11 +179,9 @@
 			
 		
 			
-		
-			
 				
 					<tr>
-						<td><a href="archived/archived-fr.html">ARCHIVÉE - Contenu archivé</a></td>
+						<td><a href="archived/archived-fr.html">ARCHIVÉE - Informations archivées</a></td>
 						<td><a href="../docs/ref/other-fr.html">Autre</a></td>
 						<td>Ajoute un avis d&#x27;archivage à une page Web.</td>
 						<td>archived</td>
@@ -194,14 +190,6 @@
 			
 		
 			
-				
-			
-		
-			
-		
-			
-		
-			
 		
 			
 		
@@ -209,9 +197,12 @@
 		
 			
 				
-			
-		
-			
+					<tr>
+						<td><a href="collapsible-alerts/collapsible-alerts-fr.html">Alertes repliables</a></td>
+						<td><a href="../docs/ref/plugins-fr.html">Plugiciels</a></td>
+						<td>Créer des alertes que les utilisateurs peuvent replier.</td>
+						<td>collapsible-alerts</td>
+					</tr>
 				
 			
 		
@@ -237,8 +228,6 @@
 			
 		
 			
-		
-			
 				
 					<tr>
 						<td><a href="cal-events/cal-events-fr.html">Calendrier d&#x27;événements</a></td>
@@ -250,24 +239,6 @@
 			
 		
 			
-				
-			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-				
-			
 		
 			
 		
@@ -277,16 +248,6 @@
 		
 			
 		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
 			
 		
 			
@@ -300,14 +261,6 @@
 				
 			
 		
-			
-				
-			
-		
-			
-		
-			
-				
 			
 		
 			
@@ -338,18 +291,6 @@
 		
 			
 				
-			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-				
 					<tr>
 						<td><a href="mathml/mathml-fr.html">Correctif MathML</a></td>
 						<td><a href="../docs/ref/polyfills-fr.html">Correctifs</a></td>
@@ -360,13 +301,22 @@
 			
 		
 			
-		
-			
 				
 					<tr>
 						<td><a href="datalist/datalist-fr.html">Correctif « datalist » (saisie automatique)</a></td>
 						<td><a href="../docs/ref/polyfills-fr.html">Correctifs</a></td>
-						<td>Émule l&#x27;attribut list de l&#x27;élément &lt;inputs&gt;, ainsi que l&#x27;élément &lt;datalist&gt;, pour les navigateurs qui ne les supportent pas.</td>
+						<td>Émule l&#x27;attribut « list » de l&#x27;élément « input », ainsi que l&#x27;élément « datalist », pour les navigateurs qui ne les supportent pas. Ceci ajoute des fonctionnalités de saisie semi-automatique des champs de « input » spécifiques en affichant dynamiquement une liste de mots qui correspondent à la « datalist ».</td>
+						<td>datalist</td>
+					</tr>
+				
+			
+		
+			
+				
+					<tr>
+						<td><a href="datalist/datalist-dynamic-fr.html">Correctif « datalist » (saisie automatique) - Dynamique</a></td>
+						<td><a href="../docs/ref/polyfills-fr.html">Correctifs</a></td>
+						<td>Montre comment mettre à jour de façon dynamique le contenu de l&#x27;élément « datalist », sur la base de l&#x27;entrée utilisateur. Particulièrement utile où il ya un grand nombre de suggestions de saisie semi-automatique.</td>
 						<td>datalist</td>
 					</tr>
 				
@@ -377,13 +327,9 @@
 					<tr>
 						<td><a href="details/details-fr.html">Correctif « details/summary » (contenu affichable/masquable)</a></td>
 						<td><a href="../docs/ref/polyfills-fr.html">Correctifs</a></td>
-						<td>Émule les éléments &lt;details&gt; et &lt;summary&gt; pour les navigateurs qui ne le supportent pas.</td>
+						<td>Émule les éléments « details » et « summary » pour les navigateurs qui ne le supportent pas. Les éléments « details » et « summary » éléments permettent au contenu d&#x27;être affiché et masqué.</td>
 						<td>details</td>
 					</tr>
-				
-			
-		
-			
 				
 			
 		
@@ -392,17 +338,9 @@
 					<tr>
 						<td><a href="datepicker/datepicker-fr.html">Correctif « input type=&quot;date&quot; » (sélecteur de date)</a></td>
 						<td><a href="../docs/ref/polyfills-fr.html">Correctifs</a></td>
-						<td>Émule l’élément &lt;input type=&quot;date&quot;&gt; pour les navigateurs qui ne le supportent pas.</td>
+						<td>Émule l’élément &lt;input type=&quot;date&quot;&gt; pour les navigateurs qui ne le supportent pas. Cela génère dynamiquement une interface de calendrier pour sélectionner une date dans un formulaire.</td>
 						<td>datepicker</td>
 					</tr>
-				
-			
-		
-			
-				
-			
-		
-			
 				
 			
 		
@@ -411,13 +349,9 @@
 					<tr>
 						<td><a href="slider/slider-fr.html">Correctif « input type=&quot;range&quot; » (barre coulissante)</a></td>
 						<td><a href="../docs/ref/polyfills-fr.html">Correctifs</a></td>
-						<td>Émule l’élément &lt;input type=&quot;range&quot;&gt; pour les navigateurs qui ne le supportent pas.</td>
+						<td>Émule l’élément &lt;input type=&quot;range&quot;&gt; pour les navigateurs qui ne le supportent pas. Le &lt;input type=&quot;range&quot;&gt; permet d&#x27;afficher une barre coulissante.</td>
 						<td>slider</td>
 					</tr>
-				
-			
-		
-			
 				
 			
 		
@@ -426,7 +360,7 @@
 					<tr>
 						<td><a href="meter/meter-fr.html">Correctif « meter » (compteur)</a></td>
 						<td><a href="../docs/ref/polyfills-fr.html">Correctifs</a></td>
-						<td>Émule l’élément « meter » pour les navigateurs qui ne le supportent pas.</td>
+						<td>Émule l’élément « meter » pour les navigateurs qui ne le supportent pas. L&#x27;élément « meter » affiche une mesure scalaire dans une gamme connue.</td>
 						<td>meter</td>
 					</tr>
 				
@@ -437,28 +371,12 @@
 					<tr>
 						<td><a href="progress/progress-fr.html">Correctif « progress » (barre de progression)</a></td>
 						<td><a href="../docs/ref/polyfills-fr.html">Correctifs</a></td>
-						<td>Émule l’élément « progress » pour les navigateurs qui ne le supportent pas.</td>
+						<td>Émule l’élément « progress » pour les navigateurs qui ne le supportent pas. L&#x27;élément « progress » de HTML5 affiche la progression d&#x27;une tâche.</td>
 						<td>progress</td>
 					</tr>
 				
 			
 		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
 			
 		
 			
@@ -470,12 +388,6 @@
 						<td>data-ajax</td>
 					</tr>
 				
-			
-		
-			
-				
-			
-		
 			
 		
 			
@@ -497,16 +409,6 @@
 		
 			
 				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-				
 					<tr>
 						<td><a href="data-picture/data-picture-fr.html">Data Picture</a></td>
 						<td><a href="../docs/ref/plugins-fr.html">Plugiciels</a></td>
@@ -523,27 +425,7 @@
 			
 		
 			
-		
-			
-		
-			
 				
-			
-		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
 			
 		
 			
@@ -564,16 +446,6 @@
 			
 		
 			
-				
-			
-		
-			
-		
-			
-		
-			
-				
-			
 		
 			
 				
@@ -591,20 +463,6 @@
 			
 		
 			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
 				
 					<tr>
 						<td><a href="feeds/feeds-fr.html">Fils de syndication</a></td>
@@ -613,10 +471,6 @@
 						<td>feeds</td>
 					</tr>
 				
-			
-		
-			
-		
 			
 		
 			
@@ -636,10 +490,6 @@
 		
 			
 				
-			
-		
-			
-				
 					<tr>
 						<td><a href="share/share-fr.html">Gadget de partage</a></td>
 						<td><a href="../docs/ref/plugins-fr.html">Plugiciels</a></td>
@@ -649,18 +499,6 @@
 				
 			
 		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
 			
 		
 			
@@ -741,23 +579,7 @@
 			
 		
 			
-				
-			
 		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
 			
 		
 			
@@ -782,12 +604,6 @@
 				
 			
 		
-			
-		
-			
-		
-			
-				
 			
 		
 			
@@ -824,10 +640,6 @@
 			
 		
 			
-				
-			
-		
-			
 		
 			
 				
@@ -847,24 +659,6 @@
 			
 		
 			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
 				
 					<tr>
 						<td><a href="menu/menu-fr.html">Menu</a></td>
@@ -873,8 +667,6 @@
 						<td>menu</td>
 					</tr>
 				
-			
-		
 			
 		
 			
@@ -891,29 +683,15 @@
 			
 		
 			
-				
-			
 		
 			
 				
 			
 		
 			
-				
-			
 		
 			
 		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
 			
 		
 			
@@ -950,31 +728,9 @@
 			
 		
 			
-				
-			
 		
 			
 				
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-		
 			
 		
 			
@@ -994,20 +750,6 @@
 		
 			
 				
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-				
 					<tr>
 						<td><a href="zebra/zebra-fr.html">Rayage du zèbre</a></td>
 						<td><a href="../docs/ref/plugins-fr.html">Plugiciels</a></td>
@@ -1015,12 +757,6 @@
 						<td>zebra</td>
 					</tr>
 				
-			
-		
-			
-				
-			
-		
 			
 		
 			
@@ -1035,23 +771,7 @@
 			
 		
 			
-				
-			
 		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-				
 			
 		
 			
@@ -1074,35 +794,9 @@
 			
 		
 			
-				
-			
 		
 			
 		
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
 			
 		
 			
@@ -1111,7 +805,7 @@
 				
 					<tr>
 						<td><a href="transitions/transitions-fr.html">Transitions</a></td>
-						<td><a href="../docs/ref/plugins-fr.html">Plugiciels</a></td>
+						<td><a href="../docs/ref/other-fr.html">Autre</a></td>
 						<td>Transitions CSS</td>
 						<td>transitions</td>
 					</tr>
@@ -1125,8 +819,13 @@
 			
 		
 			
-		
-			
+				
+					<tr>
+						<td><a href="tablevalidator/tablevalidator-fr.html">Validateur de tableau</a></td>
+						<td><a href="../docs/ref/other-fr.html">Autre</a></td>
+						<td>Outils pour les éditeur web qui fourni une assistance afin de produire des tableaux conforme au norme WCAG</td>
+						<td>tablevalidator</td>
+					</tr>
 				
 			
 		
@@ -1142,265 +841,17 @@
 			
 		
 			
-				
-			
-		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
 		
 			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-				
-			
 		
 			
 		
 			
-				
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-		
-			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
-				
-			
-		
-			
 		
 			
 		
 			
-				
-			
-		
-			
 		
-			
-				
 			
 		
 			
@@ -1416,14 +867,14 @@
 		
 		
 			<tr>
-				<td><a href="/themes-dist/GCWeb/index-fr.html">Thème Canada.ca</a></td>
+				<td><a href="http://wet-boew.github.io/themes-dist/GCWeb/index-fr.html">Thème Canada.ca</a></td>
 				<td><a href="../docs/ref/themesstyle-fr.html">Thèmes et style</a></td>
 				<td>Ce thème met en place la mise en page et la mise en forme exigés pour le site Canada.ca.</td>
 				<td>GCWeb</td>
 			</tr>
 		
 			<tr>
-				<td><a href="/themes-dist/theme-base/index-fr.html">Thème de base</a></td>
+				<td><a href="http://wet-boew.github.io/themes-dist/theme-base/index-fr.html">Thème de base</a></td>
 				<td><a href="../docs/ref/themesstyle-fr.html">Thèmes et style</a></td>
 				<td>Un modèle de thème pour la création de nouveaux thèmes.</td>
 				<td>theme-base</td>
@@ -1437,55 +888,70 @@
 			</tr>
 		
 			<tr>
-				<td><a href="/themes-dist/theme-ogpl/index-fr.html">Thème de la Plate-forme de gouvernement ouvert (PGO)</a></td>
+				<td><a href="http://wet-boew.github.io/themes-dist/theme-ogpl/index-fr.html">Thème de la Plate-forme de gouvernement ouvert (PGO)</a></td>
 				<td><a href="../docs/ref/themesstyle-fr.html">Thèmes et style</a></td>
 				<td>Un thème qui met en place la mise en page et la mise en forme pour la <a href="http://ogpl.github.io/index-fr.html" rel="external">Plate-forme de gouvernement ouvert (PGO)</a>.</td>
 				<td>theme-ogpl</td>
 			</tr>
 		
 			<tr>
-				<td><a href="/themes-dist/theme-gcwu-fegc/index-fr.html">Thème de la facilité d’emploi Web du gouvernement du Canada</a></td>
+				<td><a href="http://wet-boew.github.io/themes-dist/theme-gcwu-fegc/index-fr.html">Thème de la facilité d’emploi Web du gouvernement du Canada</a></td>
 				<td><a href="../docs/ref/themesstyle-fr.html">Thèmes et style</a></td>
 				<td>Ce thème met en place la mise en page et la mise en forme exigés par la <a href="http://www.tbs-sct.gc.ca/pol/doc-eng.aspx?id=24227" rel="external">Norme sur la facilité des sites Web</a>. Il est recommandé de se servir de ce thème sur les sites Web du gouvernement du Canada (sauf Canada.ca).</td>
 				<td>theme-gcwu-fegc</td>
 			</tr>
 		
 			<tr>
-				<td><a href="/themes-dist/theme-gc-intranet/index-fr.html">Thème du gouvernement du Canada pour les sites intranet</a></td>
+				<td><a href="http://wet-boew.github.io/themes-dist/theme-gc-intranet/index-fr.html">Thème du gouvernement du Canada pour les sites intranet</a></td>
 				<td><a href="../docs/ref/themesstyle-fr.html">Thèmes et style</a></td>
 				<td>Une version du thème de la facilité d'emploi des sites Web du gouvernement du Canada pour les sites intranet.</td>
 				<td>theme-gc-intranet</td>
 			</tr>
 		
 		
+			<tr>
+				<td><a href="http://wet-boew.github.io/wet-boew-jekyll/index-fr.html">Variant pour Jekyll</a></td>
+				<td><a href="../docs/ref/variants-fr.html">Variants</a></td>
+				<td>Adapte la BOEW pour l’utilisation avec Jekyll.</td>
+				<td>jekyll</td>
+			</tr>
+		
+			<tr>
+				<td><a href="http://www.lostprototype.com/wet-boew-4/fr/">Variant pour WordPress</a></td>
+				<td><a href="../docs/ref/variants-fr.html">Variants</a></td>
+				<td>Adapte la BOEW pour l’utilisation avec WordPress.</td>
+				<td>wordpress</td>
+			</tr>
+		
 	</tbody>
 </table>
 
 
-			<dl id="wb-dtmd" property="dateModified">
+		<dl id="wb-dtmd">
 	<dt>Date de modification&#160;:&#32;</dt>
-	<dd><time>2014-02-19</time></dd>
+	<dd><time property="dateModified">2014-07-07</time></dd>
 </dl>
 
 
-		</main>
+	</main>
 
 
 
-		<footer role="contentinfo" id="wb-info" class="container visible-sm visible-md visible-lg wb-navcurr">
+	<footer role="contentinfo" id="wb-info" class="visible-sm visible-md visible-lg wb-navcurr">
+		<div class="container">
 			<nav role="navigation" class="row">
-				<h2>Informations sur le site</h2>
+				<h2>À propos de ce site</h2>
 				<section class="col-sm-3">
-	<h3>À propos</h3>
-	<ul class="list-unstyled">
-		<li><a href="/v4.0-ci/unmin/index-fr.html#apropos">À propos de la Boîte à outils de l’expérience Web</a></li>
-		<li><a href="http://www.tbs-sct.gc.ca/ws-nw/index-fra.asp">À propos des normes Web</a></li>
-	</ul>
-</section>
-<section class="col-sm-3">
 	<h3>Contactez-nous</h3>
 	<ul class="list-unstyled">
 		<li><a href="https://github.com/wet-boew/wet-boew/issues/new">Questions ou commentaires?</a></li>
+	</ul>
+</section>
+<section class="col-sm-3">
+	<h3>À propos</h3>
+	<ul class="list-unstyled">
+		<li><a href="../index-fr.html#apropos">À propos de la Boîte à outils de l’expérience Web</a></li>
+		<li><a rel="external" href="http://www.tbs-sct.gc.ca/ws-nw/index-fra.asp">À propos des normes Web</a></li>
 	</ul>
 </section>
 <section class="col-sm-3">
@@ -1498,12 +964,14 @@
 <section class="col-sm-3">
 	<h3>Restez branchés</h3>
 	<ul class="list-unstyled">
-		<li><a href="https://twitter.com/BoiteExpWeb">Twitter</a></li>
+		<li><a rel="external" href="https://twitter.com/BoiteExpWeb">Twitter</a></li>
 	</ul>
 </section>
 
 			</nav>
-		</footer>
+		</div>
+	</footer>
+
 
 		<!--[if gte IE 9 | !IE ]><!-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
@@ -1511,6 +979,7 @@
 <!--<![endif]-->
 <!--[if lt IE 9]>
 <script src="../js/ie8-wet-boew2.js"></script>
+
 <![endif]-->
 
 

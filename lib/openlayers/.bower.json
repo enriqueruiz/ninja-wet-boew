@@ -1,14 +1,14 @@
 {
   "name": "openlayers",
-  "_cacheHeaders": {
-    "ETag": "\"96d172cc3d73b31b6fe294018e58eee9\"",
-    "Last-Modified": "Thu, 03 Apr 2014 19:43:55 GMT",
-    "Content-Length": "10573749",
-    "Content-Type": "application/octet-stream",
-    "Content-Disposition": "attachment; filename=OpenLayers-2.13.1.tar.gz"
+  "homepage": "https://github.com/wet-boew/openlayers-dist",
+  "version": "2.13.1",
+  "_release": "2.13.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.13.1",
+    "commit": "c3abaf53017ae4fd1ab03b7d829a799c58b11fda"
   },
-  "_release": "e-tag:96d172cc3",
-  "_source": "https://github.com/wet-boew/openlayers/releases/download/v2.13.1/OpenLayers-2.13.1.tar.gz",
-  "_target": "*",
-  "_originalSource": "https://github.com/wet-boew/openlayers/releases/download/v2.13.1/OpenLayers-2.13.1.tar.gz"
+  "_source": "https://github.com/wet-boew/openlayers-dist.git",
+  "_target": "2.13.1",
+  "_originalSource": "https://github.com/wet-boew/openlayers-dist.git"
 }
