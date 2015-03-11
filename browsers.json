@@ -22,13 +22,10 @@
 },{
     "browserName": "internet explorer",
     "platform": "Windows 7",
-<<<<<<< HEAD
     "version": "8"
 },{
     "browserName": "internet explorer",
     "platform": "Windows 7",
-=======
->>>>>>> 527431b5166f96cdea099f3426938a7adcf54d8e
     "version": "9"
 },{
     "browserName": "internet explorer",
