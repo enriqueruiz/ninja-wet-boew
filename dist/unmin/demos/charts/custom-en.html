@@ -31,7 +31,7 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 <!--[if lt IE 9]>
 <link href="../../assets/favicon.ico" rel="shortcut icon" />
 <link rel="stylesheet" href="../../css/ie8-wet-boew.css" />
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js"></script>
 <script src="../../js/ie8-wet-boew.js"></script>
 <![endif]-->
 
@@ -116,7 +116,7 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 		</div>
 	</div>
 
-	<nav role="navigation" id="wb-sm" data-ajax-fetch="../../ajax/sitemenu-en.html" data-trgt="mb-pnl" class="wb-menu visible-md visible-lg" typeof="SiteNavigationElement">
+	<nav role="navigation" id="wb-sm" data-ajax-replace="../../ajax/sitemenu-en.html" data-trgt="mb-pnl" class="wb-menu visible-md visible-lg" typeof="SiteNavigationElement">
 		<div class="container nvbar">
 	<h2>Topics menu</h2>
 	<div class="row">
@@ -185,9 +185,8 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 <ul>
 	<li><a href="charts-en.html">Charts and graphs - Simple and easy</a></li>
 	<li><a href="labelsandreferencevalue-en.html">Labels and reference values</a></li>
+	<li><a href="custom-en.html">Customization, custom presets and multiple charts and graphs types (current)</a></li>
 	<li><a href="piecustom-en.html">Customizing pie charts</a></li>
-	<li><a href="functionandnumbers-en.html">Thousands separator</a></li>
-	<li><a href="functionandnumbers-en.html#functionpreset">Custom preset functions</a></li>
 	<li><a href="testing-en.html">Specific test cases</a></li>
 </ul>
 
@@ -196,7 +195,7 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 <span class="wb-prettify all-pre"></span>
 <section>
 	<h2>Customization</h2>
-	<p>The following example shows how the <code>data-flot</code> attribute can be used to produce customized charts. All the available options are described in the <a href="https://github.com/flot/flot/blob/master/API.md">Flot API reference</a>.</p>
+	<p>The following example shows how the <code>data-flot</code> attribute can be used to produce customized charts. All the available options are described in the <a href="https://github.com/flot/flot/blob/master/API.md">Flot API reference</a>. It also show the i18n support for thousand seperator like the comas in English.</p>
 
 	<pre><code>&lt;table class="<strong>wb-charts wb-charts-bar table</strong>" <strong>data-flot</strong>='{ "yaxis": { "max": 150000} }'&gt;</code></pre>
 
@@ -219,14 +218,14 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 		<tbody>
 			<tr>
 				<th data-flot='{ "color":"#191970" }'>Enquiries</th>
-				<td>80189</td>
-				<td>65297</td>
-				<td>70387</td>
+				<td>80,189.56</td>
+				<td>65,297,98</td>
+				<td>70,387.33</td>
 			</tr>
 			<tr>
 				<th data-flot='{ "color":"#FF2222" }'>Threshold</th>
-				<td colspan="2">70000</td>
-				<td>75000</td>
+				<td colspan="2">70,000.24</td>
+				<td>75,000.09</td>
 			</tr>
 		</tbody>
 	</table>
@@ -246,14 +245,14 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 	&lt;tbody&gt;
 		&lt;tr&gt;
 			&lt;th <strong>data-flot='{ &quot;color&quot;:&quot;#191970&quot; }'</strong>&gt;Enquiries&lt;/th&gt;
-			&lt;td&gt;80189&lt;/td&gt;
-			&lt;td&gt;65297&lt;/td&gt;
-			&lt;td&gt;70387&lt;/td&gt;
+			&lt;td&gt;80,189.56&lt;/td&gt;
+			&lt;td&gt;65,297,98&lt;/td&gt;
+			&lt;td&gt;70,387.33&lt;/td&gt;
 		&lt;/tr&gt;
 		&lt;tr&gt;
 			&lt;th <strong>data-flot='{ &quot;color&quot;:&quot;#FF2222&quot; }'</strong>&gt;Threshold&lt;/th&gt;
-			&lt;td colspan=&quot;2&quot;&gt;70000&lt;/td&gt;
-			&lt;td&gt;75000&lt;/td&gt;
+			&lt;td colspan=&quot;2&quot;&gt;70,000.24&lt;/td&gt;
+			&lt;td&gt;75,000.09&lt;/td&gt;
 		&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;</code></pre>
@@ -285,14 +284,14 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 		<tbody>
 			<tr>
 				<th data-flot='{ "color":"#191970" }' class="wb-charts-bar">Enquiries</th>
-				<td>80189</td>
-				<td>65297</td>
-				<td>70387</td>
+				<td>80 189</td>
+				<td>65 297</td>
+				<td>70 387</td>
 			</tr>
 			<tr>
 				<th data-flot='{ "color":"#FF2222" }'>Threshold</th>
-				<td colspan="2">70000</td>
-				<td>75000</td>
+				<td colspan="2">70 000</td>
+				<td>75 000</td>
 			</tr>
 		</tbody>
 	</table>
@@ -312,14 +311,14 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 	&lt;tbody&gt;
 		&lt;tr&gt;
 			&lt;th data-flot='{ &quot;color&quot;:&quot;#191970&quot; }' <strong>class=&quot;wb-charts-bar&quot;</strong>&gt;Enquiries&lt;/th&gt;
-			&lt;td&gt;80189&lt;/td&gt;
-			&lt;td&gt;65297&lt;/td&gt;
-			&lt;td&gt;70387&lt;/td&gt;
+			&lt;td&gt;80 189&lt;/td&gt;
+			&lt;td&gt;65 297&lt;/td&gt;
+			&lt;td&gt;70 387&lt;/td&gt;
 		&lt;/tr&gt;
 		&lt;tr&gt;
 			&lt;th data-flot='{ &quot;color&quot;:&quot;#FF2222&quot; }'&gt;Threshold&lt;/th&gt;
-			&lt;td colspan=&quot;2&quot;&gt;70000&lt;/td&gt;
-			&lt;td&gt;75000&lt;/td&gt;
+			&lt;td colspan=&quot;2&quot;&gt;70 000&lt;/td&gt;
+			&lt;td&gt;75 000&lt;/td&gt;
 		&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;</code></pre>
@@ -618,7 +617,7 @@ window[ "wb-charts" ] = {
 
 		<dl id="wb-dtmd">
 	<dt>Date modified:&#32;</dt>
-	<dd><time property="dateModified">2014-02-19</time></dd>
+	<dd><time property="dateModified">2015-03-14</time></dd>
 </dl>
 
 
@@ -663,9 +662,11 @@ window[ "wb-charts" ] = {
 
 
 		<!--[if gte IE 9 | !IE ]><!-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
 <script src="../../js/wet-boew.js"></script>
 <!--<![endif]-->
+
+
 <!--[if lt IE 9]>
 <script src="../../js/ie8-wet-boew2.js"></script>
 

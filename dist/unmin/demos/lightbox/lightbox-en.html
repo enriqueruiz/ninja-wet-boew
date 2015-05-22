@@ -31,7 +31,7 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 <!--[if lt IE 9]>
 <link href="../../assets/favicon.ico" rel="shortcut icon" />
 <link rel="stylesheet" href="../../css/ie8-wet-boew.css" />
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js"></script>
 <script src="../../js/ie8-wet-boew.js"></script>
 <![endif]-->
 
@@ -116,7 +116,7 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 		</div>
 	</div>
 
-	<nav role="navigation" id="wb-sm" data-ajax-fetch="../../ajax/sitemenu-en.html" data-trgt="mb-pnl" class="wb-menu visible-md visible-lg" typeof="SiteNavigationElement">
+	<nav role="navigation" id="wb-sm" data-ajax-replace="../../ajax/sitemenu-en.html" data-trgt="mb-pnl" class="wb-menu visible-md visible-lg" typeof="SiteNavigationElement">
 		<div class="container nvbar">
 	<h2>Topics menu</h2>
 	<div class="row">
@@ -281,7 +281,10 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 					</section>
 				</li>
 				<li>
-					<a class="wb-lbx" title="AJAX - Content fragment" href="ajax/ajax4-en.html#modal">AJAX - Content Fragment</a>
+					<a class="wb-lbx" title="AJAX - Content filtered by the URL hash" href="ajax/ajax4-en.html#filter-id">AJAX - Content filtered by URL hash (v4.0.7+)</a>
+				</li>
+				<li>
+					<a class="wb-lbx" title="AJAX - Content filtered by selector" href="ajax/ajax4-en.html" data-wb-lbx='{"filter": ".filter-selector"}'>AJAX - Content filtered by selector (v4.0.12+)</a>
 				</li>
 			</ul>
 
@@ -321,6 +324,12 @@ wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licenc
 			&lt;/div&gt;
 		&lt;/section&gt;
 	&lt;/li&gt;
+		&lt;li&gt;
+			&lt;a class="wb-lbx" title="AJAX - Content filtered by the URL hash" href="ajax/ajax4-en.html#filter-id"&gt;AJAX - Content filtered by URL hash (v4.0.7+)&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;li&gt;
+			&lt;a class="wb-lbx" title="AJAX - Content filtered by a selector" href="ajax/ajax4-en.html" data-wb-lbx='{"filter": ".filter-selector"}'&gt;AJAX - Content filtered by a selector (v4.0.12+)&lt;/a&gt;
+		&lt;/li&gt;
 &lt;/ul&gt;</code></pre>
 				</details>
 			</section>
@@ -693,7 +702,7 @@ $document.on( &quot;click vclick&quot;, &quot;#lbx-open-btn&quot;, function( eve
 
 		<dl id="wb-dtmd">
 	<dt>Date modified:&#32;</dt>
-	<dd><time property="dateModified">2014-07-30</time></dd>
+	<dd><time property="dateModified">2015-05-12</time></dd>
 </dl>
 
 
@@ -738,14 +747,16 @@ $document.on( &quot;click vclick&quot;, &quot;#lbx-open-btn&quot;, function( eve
 
 
 		<!--[if gte IE 9 | !IE ]><!-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
 <script src="../../js/wet-boew.js"></script>
 <!--<![endif]-->
+<script src="demo/lightbox.js"></script>
+
 <!--[if lt IE 9]>
 <script src="../../js/ie8-wet-boew2.js"></script>
 
 <![endif]-->
-<script src="demo/lightbox.js"></script>
+
 
 	</body>
 </html>
