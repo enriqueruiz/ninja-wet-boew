@@ -40,7 +40,7 @@ var componentName = "wb-data-ajax",
 		// Start initialization
 		// returns DOM object = proceed with init
 		// returns undefined = do not proceed with init (e.g., already initialized)
-		var elm = wb.init( event, componentName + "-" + ajaxType, selector, true );
+		var elm = wb.init( event, componentName + "-" + ajaxType, selector );
 
 		if ( elm ) {
 
@@ -115,7 +115,7 @@ $document.on( "timerpoke.wb " + initEvent + " " + updateEvent + " ajax-fetched.w
 
 			// ajax-fetched event
 			content = event.fetch.response;
-			if ( content ) {
+			if ( content &&  content.length > 0 ) {
 
 				//Prevents the force caching of nested resources
 				jQueryCaching = jQuery.ajaxSettings.cache;

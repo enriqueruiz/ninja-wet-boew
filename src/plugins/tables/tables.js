@@ -114,6 +114,7 @@ var componentName = "wb-tables",
 					/*
 					 * Extend type detection
 					 */
+
 					// Formatted numbers detection
 					// Based on: http://datatables.net/plug-ins/type-detection#formatted_numbers
 					dataTableExt.aTypes.unshift(
@@ -159,8 +160,8 @@ $document.on( "init.dt draw.dt", selector, function( event, settings ) {
 		} )
 		.not( ".previous, .next" )
 			.attr( "aria-pressed", "false" )
-			.html( function( index ) {
-				return "<span class='wb-inv'>" + i18nText.paginate.page + " </span>" + ( index + 1 ) ;
+			.html( function( index, oldHtml ) {
+				return "<span class='wb-inv'>" + i18nText.paginate.page + " </span>" + oldHtml;
 			} )
 			.filter( ".current" )
 				.attr( "aria-pressed", "true" );
