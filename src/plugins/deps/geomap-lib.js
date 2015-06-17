@@ -1026,6 +1026,7 @@ var componentName = "wb-geomap",
 	addBasemapData = function( geomap, opts ) {
 		var basemap = opts.basemap,
 			hasBasemap = basemap && basemap.length !== 0,
+			controls = opts.useMapControls ? [ new OpenLayers.Control.Navigation( { zoomWheelEnabled: true } ) ] : [],
 			mapOptions, mapOpts, aspectRatio, keys;
 
 		if ( hasBasemap ) {
@@ -1064,11 +1065,7 @@ var componentName = "wb-geomap",
 		aspectRatio = mapOptions.aspectRatio === undefined ? 0.8 : mapOptions.aspectRatio;
 		geomap.gmap.height( geomap.gmap.width() * mapOptions.aspectRatio );
 
-		geomap.map = new OpenLayers.Map( geomap.gmap.attr( "id" ), $.extend( opts.config, mapOptions ) );
-
-		// Initialize control to []. If not, all maps share the same
-		// set of controls. This maybe a OpenLayers bug
-		geomap.map.controls = [];
+		geomap.map = new OpenLayers.Map( geomap.gmap.attr( "id" ), $.extend( opts.config, mapOptions, { controls: controls } ) );
 
 		// Check to see if a base map has been configured. If not add the
 		// default base map (the Canada Transportation Base Map (CBMT))
@@ -1294,14 +1291,7 @@ var componentName = "wb-geomap",
 							} ),
 							eventListeners: {
 								featuresadded: function( evt ) {
-									onFeaturesAdded(
-										geomap,
-										$table,
-										evt,
-										layer.zoom,
-										layer.datatable,
-										opts.useMapControls
-									);
+									onFeaturesAdded( geomap, $table, evt, layer.zoom, layer.datatable, opts.useMapControls );
 									if ( geomap.overlaysLoading[ layerTitle ] ) {
 										onLoadEnd( geomap );
 									}
@@ -1789,12 +1779,7 @@ var componentName = "wb-geomap",
 					features = layer.features;
 					featuresLen = features.length;
 					for ( k = 0; k !== featuresLen; k += 1 ) {
-						onTabularFeaturesAdded(
-							geomap,
-							features[ k ],
-							zoom,
-							useMapControls
-						);
+						onTabularFeaturesAdded( geomap, features[ k ], zoom, useMapControls );
 					}
 				}
 			}
@@ -1815,9 +1800,8 @@ var componentName = "wb-geomap",
 				scaleLineDiv.setAttribute( "title", i18nScaleLine );
 			}
 
-			map.addControl( new OpenLayers.Control.Navigation( { zoomWheelEnabled: true } ) );
-			map.addControl( new OpenLayers.Control.KeyboardDefaults() );
-			map.getControlsByClass( "OpenLayers.Control.KeyboardDefaults" )[ 0 ].deactivate();
+			//map.addControl( new OpenLayers.Control.Navigation( { zoomWheelEnabled: true } ) );
+			map.addControl( new OpenLayers.Control.KeyboardDefaults( { autoActivate: false } ) );
 
 			// Add the map div to the tabbing order
 			$mapDiv.attr( {
@@ -1931,7 +1915,7 @@ var componentName = "wb-geomap",
 			projMap = geomap.map.getProjectionObject();
 
 		// Global variable
-		geomap.selectControl = new OpenLayers.Control.SelectFeature();
+		//geomap.selectControl = new OpenLayers.Control.SelectFeature();
 
 		// Add layer holder
 		createLayerHolder( geomap, opts.useTab );
@@ -1971,6 +1955,49 @@ var componentName = "wb-geomap",
 			role: "dialog",
 			"aria-label": i18nText.ariaMap
 		} );
+
+		// register the mouse events
+		geomap.map.events.register( "mouseout", geomap.map, function( event ) {
+			setMapStatus( this, event );
+		} );
+
+		geomap.map.events.register( "mouseover", geomap.map, function( event ) {
+			setMapStatus( this, event );
+		} );
+	},
+
+	// Enable the keyboard navigation when map div has focus. Disable when blur
+	// Enable the wheel zoom only on hover
+	setMapStatus = function( map, event ) {
+		var type = event.type,
+			target = event.currentTarget.className.indexOf( "wb-geomap-map" ) === -1 ?
+					event.currentTarget.parentElement : event.currentTarget,
+			keyboardDefaults = map.getControlsByClass( "OpenLayers.Control.KeyboardDefaults" )[ 0 ],
+			navigation = map.getControlsByClass( "OpenLayers.Control.Navigation" )[ 0 ],
+			isActive;
+
+		if ( map ) {
+			isActive = target.className.indexOf( "active" );
+			if ( type === "mouseover" || type === "focusin" ) {
+				if ( isActive ) {
+					if ( keyboardDefaults ) {
+						keyboardDefaults.activate();
+					}
+					if ( navigation ) {
+						navigation.activate();
+					}
+					$( target ).addClass( "active" );
+				}
+			} else if ( isActive > 0 ) {
+				if ( navigation ) {
+					navigation.deactivate();
+				}
+				if ( keyboardDefaults ) {
+					keyboardDefaults.deactivate();
+				}
+				$( target ).removeClass( "active" );
+			}
+		}
 	},
 
 	/*
@@ -2671,28 +2698,11 @@ $document.on( "change", ".geomap-lgnd-cbx", function( event ) {
 
 // Enable the keyboard navigation when map div has focus. Disable when blur
 // Enable the wheel zoom only on hover
-$document.on( "mouseenter mouseleave focusin focusout", ".wb-geomap-map", function( event ) {
-	var type = event.type,
-		target = event.currentTarget,
-		map = getMapById( target.getAttribute( "data-map" ) ),
-		keyboardDefaults = "OpenLayers.Control.KeyboardDefaults",
-		navigation = "OpenLayers.Control.Navigation",
-		isActive;
+$document.on( "focusin focusout", ".wb-geomap-map", function( event ) {
+	var target = event.currentTarget,
+		map = getMapById( target.getAttribute( "data-map" ) );
 
-	if ( map ) {
-		isActive = target.className.indexOf( "active" );
-		if ( type === "mouseenter" || type === "focusin" ) {
-			if ( isActive ) {
-				map.getControlsByClass( keyboardDefaults )[ 0 ].activate();
-				map.getControlsByClass( navigation )[ 0 ].activate();
-				$( target ).addClass( "active" );
-			}
-		} else if ( !isActive ) {
-			map.getControlsByClass( navigation )[ 0 ].deactivate();
-			map.getControlsByClass( keyboardDefaults )[ 0 ].deactivate();
-			$( target ).removeClass( "active" );
-		}
-	}
+	setMapStatus( map, event );
 } );
 
 $document.on( "keydown click", ".olPopupCloseBox span", function( event ) {
