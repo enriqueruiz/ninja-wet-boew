@@ -59,6 +59,8 @@ module.exports = (grunt) ->
 				grunt.task.run [
 					"copy:deploy"
 					"gh-pages:travis"
+					"gh-pages:travis_cdn"
+					"gh-pages:travis_theme_cdn"
 					"wb-update-examples"
 				]
 	)
@@ -285,7 +287,7 @@ module.exports = (grunt) ->
 				( file ) ->
 					contents = grunt.file.read( file )
 					contents = contents.replace( /\.\.\/(wet\-boew|theme\-wet\-boew)/g, "$1" )
-					contents = contents.replace( /\"(?!https:)([^\"]*)?\.(js|css)\"/g, "\"$1.min.$2\"" )
+					contents = contents.replace( /\"(?!https:\/\/github\.com)([^\"]*)?\.(js|css)\"/g, "\"$1.min.$2\"" )
 
 					grunt.file.write(file, contents);
 			);
@@ -383,8 +385,9 @@ module.exports = (grunt) ->
 
 			i18n:
 				options:
+					banner: ""
 					process: ( src, filepath ) ->
-						lang = filepath.replace "dist/js/i18n/", ""
+						lang = filepath.replace grunt.config( "coreDist" ) + "/js/i18n/", ""
 						# jQuery validation uses an underscore for locals
 						lang = lang.replace "_", "-"
 						validationPath = "lib/jquery-validation/src/localization/"
@@ -406,7 +409,7 @@ module.exports = (grunt) ->
 
 						return src
 
-				cwd: "dist/js/i18n"
+				cwd: "<%= coreDist %>/js/i18n"
 				src: [
 					"*.js"
 					"!*.min.js"
@@ -709,12 +712,14 @@ module.exports = (grunt) ->
 
 		# Minify
 		uglify:
+			options:
+				preserveComments: (uglify,comment) ->
+					return comment.value.match(/^!/i)
+
 			polyfills:
 				options:
-					report: "min"
 					banner: "<%= banner %>"
-					preserveComments: (uglify,comment) ->
-						return comment.value.match(/^!/i)
+					sourceMap: true
 				expand: true
 				cwd: "<%= coreDist %>/js/polyfills/"
 				src: "*.js"
@@ -724,8 +729,6 @@ module.exports = (grunt) ->
 			demos:
 				options:
 					banner: "<%= banner %>"
-					preserveComments: (uglify,comment) ->
-						return comment.value.match(/^!/i)
 				expand: true
 				cwd: "dist/unmin/demos/"
 				src: "**/demo/*.js"
@@ -736,8 +739,7 @@ module.exports = (grunt) ->
 				options:
 					beautify:
 						quote_keys: true
-					preserveComments: (uglify,comment) ->
-						return comment.value.match(/^!/i)
+					sourceMap: true
 				cwd: "<%= coreDist %>/js/"
 				src: [
 					"*wet-boew*.js"
@@ -753,8 +755,6 @@ module.exports = (grunt) ->
 					beautify:
 						quote_keys: true
 						ascii_only: true
-					preserveComments: (uglify,comment) ->
-						return comment.value.match(/^!/i)
 				cwd: "<%= coreDist %>/js/"
 				src: [
 					"ie8*.js"
@@ -763,7 +763,6 @@ module.exports = (grunt) ->
 				dest: "<%= coreDist %>/js/"
 				ext: ".min.js"
 				expand: true
-
 
 			i18n:
 				options:
@@ -787,8 +786,8 @@ module.exports = (grunt) ->
 					"!*.min.js"
 				]
 				dest: "<%= coreDist %>/js/deps/"
-				rename: (destBase, destPath) ->
-					return destBase + destPath.replace(/\.js$/, ".min.js")
+				ext: ".min.js"
+				extDot: "last"
 
 		cssmin:
 			options:
@@ -857,26 +856,21 @@ module.exports = (grunt) ->
 			ajax:
 				options:
 					ignore: [
-						"XHTML element “head” is missing a required instance of child element “title”."
-						"The “details” element is not supported properly by browsers yet. It would probably be better to wait for implementations."
-						"The value of attribute “title” on element “a” from namespace “http://www.w3.org/1999/xhtml” is not in Unicode Normalization Form C." #required for vietnamese translations
-						"Text run is not in Unicode Normalization Form C." #required for vietnamese translations
+						"Element “head” is missing a required instance of child element “title”."
 					]
 				src: [
 					"dist/unmin/ajax/**/*.html"
 					"dist/unmin/demos/menu/demo/*.html"
-
 				]
+
 			ajaxFragments:
 				options:
 					ignore: [
-						"XHTML element “head” is missing a required instance of child element “title”."
-						"XHTML element “li” not allowed as child of XHTML element “body” in this context. (Suppressing further errors from this subtree.)"
-						"The “aria-controls” attribute must point to an element in the same document."
+						"Element “head” is missing a required instance of child element “title”."
+						"Element “li” not allowed as child of element “body” in this context. (Suppressing further errors from this subtree.)"
 						"The “details” element is not supported properly by browsers yet. It would probably be better to wait for implementations."
-						"The value of attribute “title” on element “a” from namespace “http://www.w3.org/1999/xhtml” is not in Unicode Normalization Form C." #required for vietnamese translations
-						"Text run is not in Unicode Normalization Form C." #required for vietnamese translations
 						"Start tag seen without seeing a doctype first. Expected “<!DOCTYPE html>”."
+						"Section lacks heading. Consider using “h2”-“h6” elements to add identifying headings to all sections."
 					]
 				src: [
 					"dist/unmin/demos/**/ajax/**/*.html"
@@ -887,12 +881,8 @@ module.exports = (grunt) ->
 					ignore: [
 						"The “details” element is not supported properly by browsers yet. It would probably be better to wait for implementations."
 						"The “date” input type is not supported in all browsers. Please be sure to test, and consider using a polyfill."
-						"The “track” element is not supported by browsers yet. It would probably be better to wait for implementations."
 						"The “time” input type is not supported in all browsers. Please be sure to test, and consider using a polyfill."
-						"The value of attribute “title” on element “a” from namespace “http://www.w3.org/1999/xhtml” is not in Unicode Normalization Form C." #required for vietnamese translations
-						"Text run is not in Unicode Normalization Form C." #required for vietnamese translations
 						"The “longdesc” attribute on the “img” element is obsolete. Use a regular “a” element to link to the description."
-						/Bad value “\.\/\.\.\/[^”]*” for attribute “[^”]*” on XHTML element “[^”]*”: Path component contains a segment “\/\.\.\/” not at the beginning of a relative reference, or it contains a “\/\.\/”. These should be removed./
 					]
 				src: [
 					"dist/unmin/**/*.html"
@@ -907,11 +897,15 @@ module.exports = (grunt) ->
 				options:
 					relaxerror: [
 						# We recommend handling this through the server headers so it never appears in the markup
-						"<head> is missing X-UA-Compatible <meta> tag that disables old IE compatibility modes"
+						"W002" # `<head>` is missing X-UA-Compatible `<meta>` tag that disables old IE compatibility modes
+						"W005" # Unable to locate jQuery, which is required for Bootstrap's JavaScript plugins to work; however, you might not be using Bootstrap's JavaScript
 						# TODO: The rules below should be resolved
-						"Only columns (.col-*-*) may be children of `.row`s"
-						"Unable to locate jQuery, which is required for Bootstrap's JavaScript plugins to work"
-						"Columns (.col-*-*) can only be children of `.row`s or `.form-group`s"
+						"W009" # Using empty spacer columns isn't necessary with Bootstrap's grid. So instead of having an empty grid column with `class="col-xs-12"` , just add `class="col-xs-offset-12"` to the next grid column.
+						"W010" # Using `.pull-left` or `.pull-right` as part of the media object component is deprecated as of Bootstrap v3.3.0. Use `.media-left` or `.media-right` instead.
+						"E013" # Only columns (`.col-*-*`) may be children of `.row`s
+						"E014" # Columns (`.col-*-*`) can only be children of `.row`s or `.form-group`s
+						"E031" # Glyphicon classes must only be used on elements that contain no text content and have no child elements.
+						"E032" # `.modal-content` must be a child of `.modal-dialog`
 					]
 				src: [
 					"dist/**/*.html"
@@ -1122,6 +1116,18 @@ module.exports = (grunt) ->
 						expand: true
 					}
 
+					{
+						src: "*.txt"
+						dest: "<%= coreDist %>"
+						expand: true
+					}
+
+					{
+						src: "*.txt"
+						dest: "<%= themeDist %>"
+						expand: true
+					}
+
 					#Backwards compatibility.
 					#TODO: Remove in v4.1
 					{
@@ -1147,6 +1153,9 @@ module.exports = (grunt) ->
 				#Backwards compatibility.
 				#TODO: Remove in v4.1
 				options:
+					noProcess: [
+						'**/*.{png,gif,jpg,ico,ttf,otf,woff,svg,swf}'
+					]
 					process: (content, filepath) ->
 						if filepath.match(/\.css/)
 							return content.replace(/\.\.\/\.\.\/wet-boew\/(assets|fonts)/g, '../$1')
@@ -1312,6 +1321,46 @@ module.exports = (grunt) ->
 					"**/*.*"
 				]
 
+			travis_cdn:
+				options:
+					repo: process.env.CDN_REPO
+					branch: "<%= deployBranch %>"
+					clone: "wet-boew-cdn"
+					base: "<%= coreDist %>"
+					message: ((
+						if process.env.TRAVIS_TAG
+							"CDN files for the " + process.env.TRAVIS_TAG + " maintenance release"
+						else
+							"Travis build " + process.env.TRAVIS_BUILD_NUMBER
+					))
+					silent: true,
+					tag: ((
+						if process.env.TRAVIS_TAG then process.env.TRAVIS_TAG else false
+					))
+				src: [
+					"**/*.*"
+				]
+
+			travis_theme_cdn:
+				options:
+					repo: process.env.THEME_CDN_REPO
+					branch: "theme-wet-boew"
+					clone: "wet-boew-theme-cdn"
+					base: "<%= themeDist %>"
+					message: ((
+						if process.env.TRAVIS_TAG
+							"CDN files for the " + process.env.TRAVIS_TAG + " maintenance release"
+						else
+							"Travis build " + process.env.TRAVIS_BUILD_NUMBER
+					))
+					silent: true,
+					tag: ((
+						if process.env.TRAVIS_TAG then process.env.TRAVIS_TAG + "-theme-wet-boew" else false
+					))
+				src: [
+					"**/*.*"
+				]
+
 			local:
 				src: [
 					"**/*.*"
@@ -1331,37 +1380,7 @@ module.exports = (grunt) ->
 					npmInstall: false
 
 	# These plugins provide necessary tasks.
-	@loadNpmTasks "assemble"
-	@loadNpmTasks "grunt-autoprefixer"
-	@loadNpmTasks "grunt-banner"
-	@loadNpmTasks "grunt-bootlint"
-	@loadNpmTasks "grunt-check-dependencies"
-	@loadNpmTasks "grunt-contrib-clean"
-	@loadNpmTasks "grunt-contrib-concat"
-	@loadNpmTasks "grunt-contrib-connect"
-	@loadNpmTasks "grunt-contrib-copy"
-	@loadNpmTasks "grunt-contrib-csslint"
-	@loadNpmTasks "grunt-contrib-cssmin"
-	@loadNpmTasks "grunt-contrib-htmlmin"
-	@loadNpmTasks "grunt-contrib-imagemin"
-	@loadNpmTasks "grunt-contrib-jshint"
-	@loadNpmTasks "grunt-contrib-uglify"
-	@loadNpmTasks "grunt-contrib-watch"
-	@loadNpmTasks "grunt-cssmin-ie8-clean"
-	@loadNpmTasks "grunt-gh-pages"
-	@loadNpmTasks "grunt-html"
-	@loadNpmTasks "grunt-i18n-csv"
-	@loadNpmTasks "grunt-imagine"
-	@loadNpmTasks "grunt-jscs"
-	@loadNpmTasks "grunt-mocha"
-	@loadNpmTasks "grunt-modernizr"
-	@loadNpmTasks "grunt-sass"
-	@loadNpmTasks "grunt-saucelabs"
-	@loadNpmTasks "grunt-wget"
-	@loadNpmTasks "grunt-wet-boew-postbuild"
-
-	# Load custom grunt tasks form the tasks directory
-	@loadTasks "tasks"
+	require( "load-grunt-tasks")( grunt, { pattern: [ "grunt-*", "assemble" ] } )
 
 	require( "time-grunt" )( grunt )
 	@
