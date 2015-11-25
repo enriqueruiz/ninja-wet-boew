@@ -290,7 +290,7 @@ var componentName = "wb-toggle",
 	 * @param {Object} data Simple key/value data object passed when the event was triggered
 	 */
 	toggleDetails = function( event, data ) {
-		if ( event.namespace === componentName ) {
+		if ( event.namespace === componentName && event.target === event.currentTarget ) {
 			var top,
 				isOn = data.isOn,
 				$elms = data.elms,
@@ -310,7 +310,7 @@ var componentName = "wb-toggle",
 			if ( !Modernizr.details ) {
 				$detail
 					.attr( "open", isOn ? null : "open" )
-					.find( "summary" ).trigger( "toggle.wb-details" );
+					.children( "summary" ).trigger( "toggle.wb-details" );
 			}
 
 			if ( data.isTablist ) {
