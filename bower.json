@@ -1,6 +1,6 @@
 {
   "name": "wet-boew",
-  "version": "4.0.20-development",
+  "version": "4.0.24-development",
   "homepage": "http://wet-boew.github.io",
   "authors": [
     "WET-BOEW Team"
@@ -29,10 +29,11 @@
     "flot": "0.8.3",
     "google-code-prettify": "1.0.4",
     "html5shiv": "3.7.2",
+    "jsonpointer": "https://github.com/alexeykuzmin/jsonpointer.js.git",
     "jquery": "2.1.4",
     "jquery-oldIE": "jquery#1.11.1",
     "jquery-pjax": "1.9.6",
-    "jquery-validation": "1.13.1",
+    "jquery-validation": "1.15.1",
     "magnific-popup": "1.0.0",
     "openlayers": "https://github.com/wet-boew/openlayers-dist.git#2.13.1",
     "proj4": "2.3.3",

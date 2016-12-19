@@ -40,8 +40,8 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 		method: "POST",				/* the request method to use */
 		additionalData: null,		/* additional data to send with the request */
 		refreshCallback: function( response ) {	/* callback function used to check the server response */
-				return response.replace( /\s/g, "" ) === "true";
-			}
+			return response.replace( /\s/g, "" ) === "true";
+		}
 	},
 
 	/**
@@ -129,8 +129,8 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 			child, modal, temp;
 
 		if ( $document.find( modalID ).length === 0 ) {
-				modal = document.createDocumentFragment(),
-				temp = document.createElement( "div" );
+			modal = document.createDocumentFragment();
+			temp = document.createElement( "div" );
 
 			// Create the modal dialog.  A temp <div> element is used so that its innerHTML can be set as a string.
 			temp.innerHTML = "<a class='wb-lbx lbx-modal mfp-hide' href='#" + componentName + "-modal'></a>" +
@@ -141,7 +141,7 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 				"</section>";
 
 			// Get the temporary <div>'s top level children and append to the fragment
-			while ( child = temp.firstChild ) {
+			while ( ( child = temp.firstChild ) !== null ) {
 				modal.appendChild( child );
 			}
 			document.body.appendChild( modal );
@@ -362,7 +362,7 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 				ks: 1000000
 			};
 
-		if ( value == null ) {
+		if ( value == null ) { //eslint-disable-line no-eq-null
 			return null;
 		}
 
@@ -384,7 +384,7 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 	getTime = function( milliseconds ) {
 		var time = { minutes: "", seconds: "" };
 
-		if ( milliseconds != null ) {
+		if ( milliseconds != null ) { //eslint-disable-line no-eq-null
 			time.minutes = parseInt( ( milliseconds / ( 1000 * 60 ) ) % 60, 10 );
 			time.seconds = parseInt( ( milliseconds / 1000 ) % 60, 10 );
 		}
@@ -419,7 +419,7 @@ var $modal, $modalLink, countdownInterval, i18n, i18nText,
 
 // Bind the plugin events
 $document.on( "timerpoke.wb " + initEvent + " " + keepaliveEvent + " " +
-	inactivityEvent + " " + resetEvent, selector, function( event, settings ) {
+inactivityEvent + " " + resetEvent, selector, function( event, settings ) {
 
 	var eventType = event.type;
 

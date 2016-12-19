@@ -144,7 +144,7 @@ var componentName = "wb-lbx",
 						$wrap = this.wrap,
 						$buttons = $wrap.find( ".mfp-close, .mfp-arrow" ),
 						len = $buttons.length,
-						i, button, $bottomBar;
+						i, button;
 
 					for ( i = 0; i !== len; i += 1 ) {
 						button = $buttons[ i ];
@@ -152,7 +152,7 @@ var componentName = "wb-lbx",
 					}
 
 					if ( $item.type === "image" ) {
-						$bottomBar = $content.find( ".mfp-bottom-bar" ).attr( "id", "lbx-title" );
+						$content.find( ".mfp-bottom-bar" ).attr( "id", "lbx-title" );
 					} else {
 						$content.attr( "role", "document" );
 					}
@@ -353,8 +353,8 @@ $( document ).on( "open" + selector, function( event, items, modal, title, ajax 
 		var isGallery = items.length > 1,
 			isModal = modal && !isGallery ? modal : false,
 			titleSrc = title ? function() {
-					return title[ $.magnificPopup.instance.index ];
-				} : "title";
+				return title[ $.magnificPopup.instance.index ];
+			} : "title";
 
 		event.preventDefault();
 

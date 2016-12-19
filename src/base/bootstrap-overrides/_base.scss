@@ -21,6 +21,19 @@ a {
 	&:visited {
 		color: $link-visited-color;
 	}
+
+	// make placeholder links look like plain text
+	&:not([href]) {
+		color: inherit;
+		text-decoration: none;
+
+		&:hover,
+		&:focus {
+			color: inherit;
+			outline: none;
+			text-decoration: none;
+		}
+	}
 }
 
 // do not change the visited link colour for certain elements
@@ -607,6 +620,20 @@ fieldset {
 	}
 
 	/*
+	 *  Allows fieldSet/legend to have a bottom border under legend title
+	 *	https://github.com/wet-boew/wet-boew/issues/7766
+	 */
+	&.legend-brdr-bttm {
+		border-top: 0;
+
+		legend {
+			border-bottom: 1px solid $legend-border-color;
+			float: none;
+			margin-bottom: 10px;
+		}
+	}
+
+	/*
 	 *	Fieldset/legend as a label for a group of checkboxes or radio buttons
 	 *	https://github.com/wet-boew/wet-boew/issues/5797
 	 */
@@ -626,6 +653,7 @@ fieldset {
  *	Pagination
  *	  * Add left/right arrows to previous/next buttons
  *	  * Increase size of the pagination buttons
+ *	  * Prevent contrast ratio issues on active placeholder links
  */
 %glyphicon-inline-icons {
 	content: " ";
@@ -633,19 +661,19 @@ fieldset {
 	font-weight: 400;
 	line-height: 1em;
 	position: relative;
-	top: 0.1em;
+	top: .1em;
 }
 
 %pagination-left-arrow {
 	@extend %glyphicon-inline-icons;
 	content: "\e091";
-	margin-right: 0.5em;
+	margin-right: .5em;
 }
 
 %pagination-right-arrow {
 	@extend %glyphicon-inline-icons;
 	content: "\e092";
-	margin-left: 0.5em;
+	margin-left: .5em;
 }
 
 .pagination,
@@ -659,7 +687,7 @@ fieldset {
 			a {
 				cursor: pointer;
 				display: inline-block;
-				margin-bottom: 0.5em;
+				margin-bottom: .5em;
 				padding: $padding-large-vertical $padding-large-horizontal;
 			}
 		}
@@ -725,6 +753,14 @@ fieldset {
 	}
 }
 
+.pagination {
+	> {
+		.active {
+			color: $pagination-active-color;
+		}
+	}
+}
+
 
 /*
  *	Use button border style 'outset' to give buttons depth, except when disabled
@@ -784,11 +820,11 @@ fieldset {
 
 			> {
 				* {
-					margin-right: 0.7em;
+					margin-right: .7em;
 				}
 
 				:first-child {
-					margin-right: 0.4em;
+					margin-right: .4em;
 				}
 			}
 		}

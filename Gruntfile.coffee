@@ -229,8 +229,8 @@ module.exports = (grunt) ->
 		"test"
 		"INTERNAL: Runs testing tasks except for SauceLabs testing"
 		[
-			"jshint"
-			"jscs"
+			"eslint"
+			"sasslint"
 		]
 	)
 
@@ -314,6 +314,22 @@ module.exports = (grunt) ->
 		glyphiconsBanner: "/*!\n * GLYPHICONS Halflings for Twitter Bootstrap by GLYPHICONS.com | Licensed under http://www.apache.org/licenses/LICENSE-2.0\n */"
 		i18nGDocsID: "1BmMrKN6Rtx-dwgPNEZD6AIAQdI4nNlyVVVCml0U594o"
 		i18nGDocsSheet: 1
+
+		# Commit Messages
+		commitMessage: " Commit wet-boew/wet-boew#" + process.env.TRAVIS_COMMIT
+		travisBuildMessage: "Travis build " + process.env.TRAVIS_BUILD_NUMBER
+		distDeployMessage: ((
+			if process.env.TRAVIS_TAG
+				"Production files for the " + process.env.TRAVIS_TAG + " release."
+			else
+				"<%= travisBuildMessage %>"
+		)) + "<%= commitMessage %>"
+		cdnDeployMessage: ((
+			if process.env.TRAVIS_TAG
+				"CDN files for the " + process.env.TRAVIS_TAG + " release."
+			else
+				"<%= travisBuildMessage %>"
+		)) + "<%= commitMessage %>"
 
 		deployBranch: "v4.0-dist"
 
@@ -509,6 +525,8 @@ module.exports = (grunt) ->
 				]
 
 			test:
+				options:
+					offline: true
 				expand: true
 				cwd: "site/pages"
 				src: "test/test.hbs"
@@ -546,6 +564,20 @@ module.exports = (grunt) ->
 				map: "src/plugins/geomap/assets/sprites_geomap.png"
 				staticImagePath: '#{$wb-assets-path}'
 				output: "scss"
+
+		sasslint:
+			options:
+				configFile: ".sass-lint.yml"
+			all:
+				expand: true
+				src: [
+						"**/*.scss"
+						"!lib/**"
+					    "!node_modules/**"
+					    "!dist/**"
+						"!wet-boew-dist/**"
+					    "!src/**/sprites/**"
+					]
 
 		# Compiles the Sass files
 		sass:
@@ -1006,6 +1038,7 @@ module.exports = (grunt) ->
 						"flot/jquery.flot.pie.js"
 						"flot/jquery.flot.canvas.js"
 						"SideBySideImproved/jquery.flot.orderBars.js"
+						"jsonpointer/src/jsonpointer.js"
 						"jquery-validation/dist/jquery.validate.js"
 						"jquery-validation/dist/additional-methods.js"
 						"magnific-popup/dist/jquery.magnific-popup.js"
@@ -1178,7 +1211,7 @@ module.exports = (grunt) ->
 			options:
 				livereload: true
 			js:
-				files: "<%= jshint.all.src %>"
+				files: "<%= eslint.all.src %>"
 				tasks: "js"
 			css:
 				files: [
@@ -1196,26 +1229,15 @@ module.exports = (grunt) ->
 				files: "site/pages/docs/**/*.hbs"
 				tasks: "pages:docs"
 
-		jshint:
+		eslint:
 			options:
-				jshintrc: ".jshintrc"
-
+				configFile: '.eslintrc.json'
+				quiet: true
 			all:
 				src: [
 					"src/**/*.js"
 					"theme/**/*.js"
 					"tasks/*.js"
-				]
-
-		jscs:
-			all:
-				options:
-					config: ".jscsrc"
-
-				src: [
-					"<%= jshint.all.src %>"
-					"!src/polyfills/slider/slider.js",
-					"!src/polyfills/events/mobile.js"
 				]
 
 		connect:
@@ -1310,12 +1332,7 @@ module.exports = (grunt) ->
 				options:
 					repo: process.env.DIST_REPO
 					branch: "<%= deployBranch %>"
-					message: ((
-						if process.env.TRAVIS_TAG
-							"Production files for the " + process.env.TRAVIS_TAG + " maintenance release"
-						else
-							"Travis build " + process.env.TRAVIS_BUILD_NUMBER
-					))
+					message: "<%= distDeployMessage %>"
 					silent: true,
 					tag: ((
 						if process.env.TRAVIS_TAG then process.env.TRAVIS_TAG else false
@@ -1330,12 +1347,7 @@ module.exports = (grunt) ->
 					branch: "<%= deployBranch %>"
 					clone: "wet-boew-cdn"
 					base: "<%= coreDist %>"
-					message: ((
-						if process.env.TRAVIS_TAG
-							"CDN files for the " + process.env.TRAVIS_TAG + " maintenance release"
-						else
-							"Travis build " + process.env.TRAVIS_BUILD_NUMBER
-					))
+					message: "<%= cdnDeployMessage %>"
 					silent: true,
 					tag: ((
 						if process.env.TRAVIS_TAG then process.env.TRAVIS_TAG else false
@@ -1350,12 +1362,7 @@ module.exports = (grunt) ->
 					branch: "theme-wet-boew"
 					clone: "wet-boew-theme-cdn"
 					base: "<%= themeDist %>"
-					message: ((
-						if process.env.TRAVIS_TAG
-							"CDN files for the " + process.env.TRAVIS_TAG + " maintenance release"
-						else
-							"Travis build " + process.env.TRAVIS_BUILD_NUMBER
-					))
+					message: "<%= cdnDeployMessage %>"
 					silent: true,
 					tag: ((
 						if process.env.TRAVIS_TAG then process.env.TRAVIS_TAG + "-theme-wet-boew" else false
@@ -1374,7 +1381,7 @@ module.exports = (grunt) ->
 				options:
 					repo: process.env.DEMOS_REPO
 					branch: process.env.DEMOS_BRANCH
-					message: "<%= grunt.config('gh-pages.travis.options.message') %>"
+					message: "<%= distDeployMessage %>"
 					silent: true
 
 		checkDependencies:
