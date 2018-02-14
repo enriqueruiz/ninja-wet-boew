@@ -3,6 +3,7 @@ options:
   merge-default-rules: false
 rules:
   class-name-format: 0
+  final-newline: 2
   function-name-format: 0
   id-name-format: 0
   indentation:
@@ -23,6 +24,7 @@ rules:
         - border-top
         - border-bottom
         - cursor
+        - list-style-type
   no-empty-rulesets: 2
   no-ids: 0
   no-important: 0
@@ -38,4 +40,5 @@ rules:
   quotes:
     - 2
     - style: double
+  space-before-bang: 2
   variable-name-format: 0

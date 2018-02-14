@@ -25,6 +25,7 @@ module.exports = (grunt) ->
 			"demos-min"
 			"htmllint"
 			"bootlint"
+			"sri"
 		]
 	)
 
@@ -38,6 +39,7 @@ module.exports = (grunt) ->
 			"sprites"
 			"css"
 			"js"
+			"string-replace"
 		]
 	)
 
@@ -245,7 +247,7 @@ module.exports = (grunt) ->
 			]
 
 			#Prevents multiple instances of connect from running
-			if grunt.config.get('connect.test.options.port') is `undefined`
+			if grunt.config.get "connect.test.options.port" is undefined
 				grunt.task.run "connect:test"
 	)
 
@@ -258,10 +260,10 @@ module.exports = (grunt) ->
 				grunt.task.run(
 					"htmlmin"
 					"useMinAssets"
-				);
+				)
 			else
 
-				if target != "test" and grunt.config("i18n_csv.assemble.locales") == undefined
+				if target != "test" and grunt.config "i18n_csv.assemble.locales" is undefined
 					grunt.task.run(
 						"i18n_csv:assemble"
 					)
@@ -270,7 +272,7 @@ module.exports = (grunt) ->
 				target = if target then ":" + target else ""
 				grunt.task.run(
 					"assemble" + target
-				);
+				)
 	)
 
 	@registerTask(
@@ -280,16 +282,16 @@ module.exports = (grunt) ->
 			htmlFiles = grunt.file.expand(
 				"dist/**/*.html"
 				"!dist/unmin/**/*.html"
-			);
+			)
 
 			htmlFiles.forEach(
 				( file ) ->
-					contents = grunt.file.read( file )
-					contents = contents.replace( /\.\.\/(wet\-boew|theme\-wet\-boew)/g, "$1" )
-					contents = contents.replace( /\"(?!https:\/\/github\.com)([^\"]*)?\.(js|css)\"/g, "\"$1.min.$2\"" )
+					contents = grunt.file.read file
+					contents = contents.replace /\.\.\/(wet\-boew|theme\-wet\-boew)/g, "$1"
+					contents = contents.replace /\"(?!https:\/\/github\.com)([^\"]*)?\.(js|css)\"/g, "\"$1.min.$2\""
 
-					grunt.file.write(file, contents);
-			);
+					grunt.file.write file, contents
+			)
 	)
 
 	globalConnectMiddleware = (connect, middlewares) ->
@@ -298,16 +300,17 @@ module.exports = (grunt) ->
 				/json|text|javascript|dart|image\/svg\+xml|application\/x-font-ttf|application\/vnd\.ms-opentype|application\/vnd\.ms-fontobject/.test res.getHeader("Content-Type")
 		)
 
-	grunt.util.linefeed = "\n"
+	@util.linefeed = "\n"
 	# Project configuration.
-	grunt.initConfig
+	@initConfig
 
 		# Metadata.
-		pkg: grunt.file.readJSON("package.json")
+		pkg: @file.readJSON "package.json"
 		coreDist: "dist/wet-boew"
 		themeDist: "dist/theme-wet-boew"
-		jqueryVersion: grunt.file.readJSON("lib/jquery/bower.json")
-		jqueryOldIEVersion: grunt.file.readJSON("lib/jquery-oldIE/bower.json")
+		jqueryVersion: @file.readJSON "lib/jquery/bower.json"
+		jqueryOldIEVersion: @file.readJSON "lib/jquery-oldIE/bower.json"
+		MathJaxVersion: @file.readJSON "lib/MathJax/.bower.json"
 		banner: "/*!\n * Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)\n * wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html\n" +
 				" * v<%= pkg.version %> - " + "<%= grunt.template.today('yyyy-mm-dd') %>\n *\n */"
 		modernizrBanner: "/*! Modernizr (Custom Build) | MIT & BSD */\n"
@@ -332,6 +335,14 @@ module.exports = (grunt) ->
 		)) + "<%= commitMessage %>"
 
 		deployBranch: "v4.0-dist"
+
+		checkDependencies:
+			all:
+				options:
+					npmInstall: false
+
+		clean:
+			dist: ["dist", "src/base/partials/*sprites*"]
 
 		# Task configuration.
 		wget:
@@ -409,11 +420,11 @@ module.exports = (grunt) ->
 
 						# Check and append message file
 						messagesPath = validationPath + "messages_" + lang
-						messages = if grunt.file.exists messagesPath then grunt.file.read( messagesPath ) else ""
+						messages = if grunt.file.exists messagesPath then grunt.file.read messagesPath else ""
 
 						# Check and append method file
 						methodsPath = validationPath + "methods_" + lang
-						methods = if grunt.file.exists methodsPath then grunt.file.read( methodsPath ) else ""
+						methods = if grunt.file.exists methodsPath then grunt.file.read methodsPath else ""
 
 						if methods != "" or messages != ""
 							src += "\nwb.doc.one( \"formLanguages.wb\", function() {\n"
@@ -571,12 +582,10 @@ module.exports = (grunt) ->
 			all:
 				expand: true
 				src: [
-						"**/*.scss"
-						"!lib/**"
-					    "!node_modules/**"
-					    "!dist/**"
-						"!wet-boew-dist/**"
-					    "!src/**/sprites/**"
+						"site/**/*.scss"
+						"src/**/*.scss"
+						"theme/**/*.scss"
+						"!src/**/sprites/**"
 					]
 
 		# Compiles the Sass files
@@ -745,7 +754,7 @@ module.exports = (grunt) ->
 		uglify:
 			options:
 				preserveComments: (uglify,comment) ->
-					return comment.value.match(/^!/i)
+					return comment.value.match /^!/i
 
 			polyfills:
 				options:
@@ -1038,7 +1047,6 @@ module.exports = (grunt) ->
 						"flot/jquery.flot.pie.js"
 						"flot/jquery.flot.canvas.js"
 						"SideBySideImproved/jquery.flot.orderBars.js"
-						"jsonpointer/src/jsonpointer.js"
 						"jquery-validation/dist/jquery.validate.js"
 						"jquery-validation/dist/additional-methods.js"
 						"magnific-popup/dist/jquery.magnific-popup.js"
@@ -1046,12 +1054,27 @@ module.exports = (grunt) ->
 						"DataTables/media/js/jquery.dataTables.js"
 						"proj4/dist/proj4.js"
 						"openlayers/OpenLayers.debug.js"
+						"unorm/lib/unorm.js"
 					]
 					dest: "<%= coreDist %>/js/deps"
 					rename: (dest, src) ->
-						return dest + "/" + src.replace( ".debug", "" )
+						return dest + "/" + src.replace ".debug", ""
 					expand: true
 					flatten: true
+				,
+					cwd: "lib/MathJax"
+					src: [
+						"MathJax.js"
+						"config/**"
+						"docs/**"
+						"extensions/**"
+						"jax/**"
+						"localization/**"
+						"fonts/HTML-CSS/TeX/woff/**"
+						"fonts/HTML-CSS/TeX/otf/**"
+					]
+					dest: "<%= coreDist %>/js/MathJax/"
+					expand: true
 				,
 					cwd: "lib/jquery/dist"
 					src: "*.*"
@@ -1200,19 +1223,20 @@ module.exports = (grunt) ->
 						'**/*.{png,gif,jpg,ico,ttf,eot,otf,woff,svg,swf}'
 					]
 					process: (content, filepath) ->
-						if filepath.match(/\.css/)
-							return content.replace(/\.\.\/\.\.\/wet-boew\/(assets|fonts)/g, '../$1')
+						if filepath.match /\.css/
+							return content.replace /\.\.\/\.\.\/wet-boew\/(assets|fonts)/g, '../$1'
 						content
 
-		clean:
-			dist: ["dist", "src/base/partials/*sprites*"]
 
 		watch:
 			options:
 				livereload: true
 			js:
 				files: "<%= eslint.all.src %>"
-				tasks: "js"
+				tasks: [
+					  "js"
+					  "string-replace"
+				]
 			css:
 				files: [
 					"src/**/*.scss"
@@ -1231,7 +1255,7 @@ module.exports = (grunt) ->
 
 		eslint:
 			options:
-				configFile: '.eslintrc.json'
+				configFile: if process.env.CI == "true" then ".eslintrc.ci.json" else ".eslintrc.json"
 				quiet: true
 			all:
 				src: [
@@ -1251,20 +1275,20 @@ module.exports = (grunt) ->
 						globalConnectMiddleware connect, middlewares
 
 						middlewares.unshift (req, res, next) ->
-							req.url = req.url.replace( "/v4.0-ci/", "/" )
+							req.url = req.url.replace "/v4.0-ci/", "/"
 							next()
 
 						# Serve the custom error page
 						middlewares.push (req, res) ->
 							filename = options.base + req.url
 
-							if not grunt.file.exists( filename )
+							if not grunt.file.exists filename
 								filename = options.base + "/404.html"
 
 								# Set the status code manually
 								res.statusCode = 404
 
-							res.end( grunt.file.read( filename ) )
+							res.end( grunt.file.read filename )
 
 						middlewares
 
@@ -1298,7 +1322,7 @@ module.exports = (grunt) ->
 			options:
 				urls: "<%= mocha.all.options.urls %>"
 				throttled: 3
-				browsers: grunt.file.readJSON "browsers.json"
+				browsers: @file.readJSON "browsers.json"
 				tunnelArgs: [
 					"-D"
 					"ajax.googleapis.com"
@@ -1322,6 +1346,15 @@ module.exports = (grunt) ->
 				options:
 					testname: "Local Test - <%= grunt.template.today('yyyy-mm-dd hh:MM') %>"
 
+		"string-replace":
+			inline:
+				files:
+					'dist/wet-boew/js/': 'dist/wet-boew/js/*.js'
+				options:
+					replacements: [
+						pattern: 'BOWER_VERSION_MATHJAX'
+						replacement: '<%= MathJaxVersion.version %>'
+	        ]
 
 		"gh-pages":
 			options:
@@ -1333,7 +1366,6 @@ module.exports = (grunt) ->
 					repo: process.env.DIST_REPO
 					branch: "<%= deployBranch %>"
 					message: "<%= distDeployMessage %>"
-					silent: true,
 					tag: ((
 						if process.env.TRAVIS_TAG then process.env.TRAVIS_TAG else false
 					))
@@ -1348,7 +1380,6 @@ module.exports = (grunt) ->
 					clone: "wet-boew-cdn"
 					base: "<%= coreDist %>"
 					message: "<%= cdnDeployMessage %>"
-					silent: true,
 					tag: ((
 						if process.env.TRAVIS_TAG then process.env.TRAVIS_TAG else false
 					))
@@ -1363,7 +1394,6 @@ module.exports = (grunt) ->
 					clone: "wet-boew-theme-cdn"
 					base: "<%= themeDist %>"
 					message: "<%= cdnDeployMessage %>"
-					silent: true,
 					tag: ((
 						if process.env.TRAVIS_TAG then process.env.TRAVIS_TAG + "-theme-wet-boew" else false
 					))
@@ -1382,15 +1412,28 @@ module.exports = (grunt) ->
 					repo: process.env.DEMOS_REPO
 					branch: process.env.DEMOS_BRANCH
 					message: "<%= distDeployMessage %>"
-					silent: true
 
-		checkDependencies:
-			all:
+		sri:
+			options:
+				pretty: true
+			wet_boew:
 				options:
-					npmInstall: false
+					dest: "<%= coreDist %>/payload.json"
+				cwd: "<%= coreDist %>"
+				src: [
+					"{js,css}/**/*.{js,css}"
+				]
+				expand: true
+			theme:
+				options:
+					dest: "<%= themeDist %>/payload.json"
+				cwd: "<%= themeDist %>"
+				src: [
+					"{js,css}/*.{js,css}"
+				]
+				expand: true
 
-	# These plugins provide necessary tasks.
-	require( "load-grunt-tasks")( grunt, { pattern: [ "grunt-*", "assemble" ] } )
+	require( "load-grunt-tasks" )( grunt )
 
 	require( "time-grunt" )( grunt )
 	@

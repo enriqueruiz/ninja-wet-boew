@@ -120,6 +120,7 @@
 @import "../plugins/collapsible-alerts/base";
 @import "../plugins/dismissable-content/base";
 @import "../plugins/equalheight/base";
+@import "../plugins/filter/base";
 @import "../plugins/footnotes/base";
 @import "../plugins/formvalid/base";
 @import "../plugins/lightbox/base";
@@ -128,7 +129,6 @@
 @import "../plugins/overlay/base";
 @import "../plugins/prettify/base";
 @import "../plugins/resize/base";
-@import "../plugins/session-timeout/base";
 @import "../plugins/share/base";
 @import "../plugins/tables/base";
 @import "../plugins/tabs/base";
@@ -152,6 +152,7 @@
 @media screen {
 	@import "views/screen";
 	@import "../plugins/prettify/screen";
+	@import "../plugins/tabs/screen";
 }
 
 /* Extra-small view and under */
@@ -246,6 +247,7 @@
 	@import "../plugins/geomap/print";
 	@import "../plugins/lightbox/print";
 	@import "../plugins/multimedia/print";
+	@import "../plugins/overlay/print";
 	@import "../plugins/prettify/print";
 	@import "../plugins/tabs/print";
 }
